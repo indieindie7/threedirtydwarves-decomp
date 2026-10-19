@@ -1,0 +1,1326 @@
+0x00401000 func stub_00401000 hand tiny stub that only returns
+0x0040100b func bmp_LoadFile hand fopen BMP, read header width height bpp, alloc via mem_Alloc, copy rows bottom-up into short-header image
+0x0040119c func vga_SetBackColor hand if VGA mode, out port 0x3c8 index 0 then three bytes to 0x3c9 from RGB param
+0x004011d1 func demo_InitRecording hand sets demo mode 1 record or 2 play, clears counters, allocs 64KB demo buffer
+0x00401220 func stub_00401220 hand tiny stub that only returns
+0x0040122b func demo_SaveFile hand fopen write, writes byte length and demo input buffer, fclose
+0x0040129b func demo_LoadFile hand LZ open file, read length, mem_Alloc buffer, read demo data, close
+0x00401316 func input_UpdatePads hand per-frame input: record or playback demo run-length, remaps button bits for 3 pad masks, edge detect
+0x00401baf func lz_OpenFile hand LZOpenFile wrapper storing handle in global, returns handle or 0
+0x00401be7 func lz_CloseFile hand closes global LZ handle if open and clears it
+0x00401c1a func lz_ReadOrSkip hand LZRead into buffer, or skip bytes one at a time when buffer null
+0x00401c96 func mem_Alloc hand malloc wrapper, fatal error on failure, records pointer and size in tracking tables
+0x00401d06 func mem_Free hand finds pointer in tracking table, frees it, subtracts size, clears slot
+0x00401d93 func mem_FreeAll hand frees every tracked allocation from last to first, clears total
+0x00401e26 func sprq_QueueSprite hand stores 7 sprite params into 0x1c-byte queue entry, increments count
+0x00401ee0 func sprq_FlushSprites hand loops queued sprite entries calling sprite blit function, resets count
+0x00401f67 func rectq_QueueRect hand stores shifted rect coordinates and colour into 0x18-byte queue entry
+0x00402037 func rectq_FlushRects hand loops queued rect entries calling rect draw function, resets count
+0x00402088 func drawq_DrawObject hand draw callback: calls object draw with fields at +0x3a,+4,+8 of entry
+0x004020b9 func drawq_FlushRectsAndSprites hand draw callback: runs rectq_FlushRects then sprq_FlushSprites
+0x004020d6 func drawq_AddFlush hand adds draw-list entry type 8 with flush callback, sort key priority*100+index
+0x00402147 func drawq_AddSprite hand adds draw-list entry type 1 with sprite draw callback, args and sort key
+0x004021cb func drawq_AddObject hand adds draw-list entry type 1 with object draw callback drawq_DrawObject
+0x00402267 func drawq_AddTileLayerA hand adds draw-list entry type 3 with shifted x y, mode 0, tile callback
+0x00402302 func drawq_AddTileLayerB hand adds draw-list entry type 3 with shifted x y, mode 1, tile callback
+0x0040239d func stub_0040239d hand tiny stub that returns 0
+0x004023b0 func drawq_AddScaledBitmap hand adds draw-list entry type 4 with shifted rect coords, callback chosen by flag char
+0x004024c4 func drawq_AddQuadType10 hand adds draw-list entry type 10 with six shifted coords, priority from global
+0x004025b1 func drawq_DrawBox hand draw callback: calls box draw with four coords at +0x20..+0x2c and colour at +0x3a
+0x004025ef func drawq_AddBox hand adds draw-list entry type 9 copying four shorts rect and colour, callback drawq_DrawBox
+0x00402694 func drawq_AddQuadType9 hand adds draw-list entry type 9 with six shifted coords and extra params
+0x00402797 func drawq_AddAnimFrame hand adds draw-list entry type 0xd if frame struct field+4 is 1, eight coord params
+0x00402877 func drawq_AddQuadType7 hand adds draw-list entry type 7 with eight shifted coords, flag byte
+0x00402982 func drawq_AddType5 hand adds draw-list entry type 5 with six shifted coords, callback 0x440910
+0x00402a7c func drawq_AddType6 hand adds draw-list entry type 6 with four shifted coords, flag byte
+0x00402b5b func drawq_AddScaledImage hand validates scale and bounds of image header, adds scaled sprite entry picking blit routine from tables, max 199 entries
+0x00402da1 func drawq_SortByPriority hand shell sort of draw-list keys descending with paired entry pointers
+0x00402f0a func drawq_ExecuteAll hand sorts draw list then calls each entry callback, resets counts
+0x00402f82 func file_LoadLzAlloc hand LZ open file, read 4-byte size, mem_Alloc, read data, close; error handler on failure
+0x00403014 func file_LoadRawWH hand fopen, fread two shorts width height, alloc w*h, fread pixels, fclose; error on failure
+0x004030fe func gfx_DrawRotatedMap hand renders 0x71x0x72 rotated view of map bytes using sine tables into screen buffer, pixel doubled
+0x0040329a func layer_BlitScaledColumnsUp hand blits scaled image rows upward into screen buffer with clipping, row copy by dword
+0x004034c4 func layer_BlitScaledColumnsDown hand blits scaled image rows downward into screen buffer with clipping, row copy by dword
+0x004036d2 func img_LoadHeaderPixels hand sprintf filename by index and mode, LZ open, read 16-byte header then pixel data into allocated buffer
+0x0040379b func img_LoadWH hand sprintf filename, LZ open, read width height shorts, alloc w*h+4, read pixels, close
+0x00403889 func img_LoadWHPadded hand sprintf filename, LZ open, read width height shorts, alloc w*h+6, read pixels plus 2 extra bytes
+0x00403980 func dwarf_Init hand initialises next dwarf actor slot: roster index, state, anim pointer, timers, calls hitbox and anim setup
+0x00403bab func dwarf_SwapRoster hand switches active dwarf with another slot unless dead or hurt, swaps health entries, sets roster order
+0x00403ccf func dwarf_UpdateState hand per-frame dwarf state machine: pad direction to walk, run, jump, attack, hit, death states, velocity setup
+0x00404936 func dwarf_Draw hand sets palette and flip flag by roster slot, draws sprite via anim draw routines then shadow
+0x004049f9 func dwarf_CheckGrabOrBump hand handles collision mode 1 push-back against object velocity or mode 2 type P pickup knockdown
+0x00404b70 func dwarf_CheckCollision hand runs actor collision against current object unless type is O or P
+0x00404bc9 func actor_FindNearestInRange hand loops actor list matching type and flags, picks one in angle and depth range with highest depth
+0x00404cfb func actor_HandleLaunch hand handles launched actor of type [ or P: picks target in range, computes velocity and sets state 0x101 or 0x102
+0x004050b8 func dwarf_StartAttackIfPressed hand if active dwarf and button 0x20 pressed sets attack state 0x104 or 0x100 depending on idle, returns state
+0x004051a2 func dwarf_AutoFollowLeader hand moves non-controlled dwarf toward formation slot position of leader, builds velocity and synthetic pad bits
+0x004054bf func enemy_Init hand initialises enemy actor: sprite palette, hitbox, health, state, type-specific fields, uses rand and spawn slot counters
+0x00405849 func enemy_UpdateAI hand enemy AI state machine: chase dwarf, wander, attack timers with rand, spawns sub-actors, applies velocity
+0x004069db func hud_DrawDwarfIcons hand draws anim then three dwarf roster portraits and life/kill counter icons with sprite pack draw, wrapping frame counters
+0x00406d0b func minion_OnCollide hand collision callback for minion enemy: mode 1 hit check, mode 2 knocked back with state 6, mode 8 decrements live minion counts
+0x00406e98 func minion_GrabOnContact hand if touched object type O and dwarf not dying, dwarf grabbed state 0x103, clears hitboxes; else generic collision
+0x00407021 func ai_DirToTarget hand computes x y deltas to target point, sets 4-bit direction mask and approximate distance, masks by blocked bits
+0x004071be func proj_Init hand initialises projectile/item actor: palette, flags 0x24, small 8x4 hitbox, state 0x100, calls anim update
+0x004072d9 func proj_Update hand per-frame projectile move by state, timeout 0xb4 frames, removes or spawns bonus counter when landed
+0x0040750c func proj_Draw hand draws projectile actor sprite via sprite draw routine with position fields
+0x00407550 func proj_OnHit hand collision callback type 13: bounce vertical velocity, state change, apply decaying speed along direction
+0x004076fb func proj_OnHitByP hand if colliding object type P with speed, reflects its velocity and direction, sets state 0xc
+0x00407810 func stub_00407810 hand tiny stub that only returns
+0x0040781b func actor_PoolInit hand memsets 0x5000 actor pool, builds free list of 0x100-byte actors with ids, clears active list
+0x004078d0 func body_PoolInit hand memsets body pool, builds free list of 0x38-byte body objects with ids
+0x00407979 func actor_InsertSorted hand inserts actor into doubly linked active list ordered by byte0 and byte1 keys
+0x00407aaf func body_InsertSorted hand inserts body object into doubly linked list ordered by byte0 and byte1 keys
+0x00407bc4 func actor_Spawn hand allocs actor and body from free lists by type table, sets position, callbacks, hitbox masks, calls type init function
+0x00407ed6 func body_Alloc hand takes body object from free list, copies type and position from owner actor, optional callbacks
+0x00407fc0 func body_Free hand unlinks body object from owner child list and sorted list, returns it to free list
+0x004080b7 func actor_Kill hand marks self for removal or calls death callback, frees child bodies, unlinks actor from list, returns to free pool
+0x004081fe func level_SpawnActorList hand reads spawn records (type x y z flags) from level data until y limit calling actor_Spawn
+0x004082ce func level_InitActors hand sets flag, initialises actor and body pools, stores spawn list pointer and spawns initial actors
+0x0040830c func level_SpawnAndCull hand spawns actors scrolling into window 0xc0 below camera y, kills actors and bodies scrolled off-screen
+0x004084e6 func actor_UpdateAll hand runs every actor update callback, then collision pass between actor hitboxes and body list calling body callbacks
+0x004087a7 func actor_DrawAll hand loops actors and calls draw callback at +0x44 where set
+0x004087f3 func actor_Move hand adds velocity to actor 3D position, shifts bounding box and child body boxes by the integer delta
+0x00408999 func world_FindActorInBox hand searches actors by mask and box overlap returning last match and clipped x range
+0x00408ac7 func world_FindBodyInBox hand searches body list by mask and box overlap returning last match and clipped x range
+0x00408bf2 func actor_RotateAroundPivot hand rotates actor position around pivot using sin/cos helpers, shifts bounding boxes and child bodies
+0x00408db0 func stage8_RegisterHandlers hand sets stage 8 run callback and data table, registers scene handler sets 0x5e to 0x69 via FUN_0040d919
+0x00408ee4 func level_SpawnAndCullWide hand same as level_SpawnAndCull but with wider 0x160 spawn window
+0x004090be func stage8_Run hand stage 8 main loop: loads stage8 pln maps and palette, then per frame updates actors, camera, draw, input until done
+0x004092d8 func stage8_QueueBackgrounds hand queues two background object draws with camera-derived scroll offsets
+0x0040934b func camera_Update hand computes camera target from lead dwarf position, applies scroll limits flags, updates scroll globals
+0x004098d6 func camera_Init hand clears 0x48-byte camera block, sets default scroll limits, projection constants, copies state to backup block
+0x00409a10 func math_SinFixed hand converts int angle to radians double and calls x87 sin helper, returns fixed via ftol
+0x00409a54 func math_CosFixedLast hand uses x87 stack value from previous sin call to produce cosine result via ftol
+0x00409a98 func math_SinFixed_2 hand duplicate of math_SinFixed: angle to radians, sin helper, ftol
+0x00409adc func math_CosFixedLast_2 hand duplicate of math_CosFixedLast: x87 cosine result via ftol
+0x00409b20 func actor_SetBodyBox hand sets attack body object mask, callback and min/max box offsets relative to owner, mirrored when facing flag set
+0x00409cb3 func actor_UpdateAnim hand advances anim frame counter by speed, loops or ends via anim table entries, picks next state and facing flags
+0x00409f3a func ai_DirToPoint hand direction bits and distance from current actor to point with dead-zone threshold
+0x0040a073 func actor_SetHitbox hand sets actor bounding box from six offsets around its position and copies to child bodies
+0x0040a16e func box_BuildMinMaxFromPos hand writes six-short box from position shorts and offsets using min and max order
+0x0040a20a func box_BuildFromPos hand writes six-short box as position plus offset pairs
+0x0040a2a6 func cam_WorldToScreen hand perspective-projects world x y at depth to screen x y using camera block
+0x0040a388 func cam_ScreenToWorld hand inverse projection of screen x y at depth to world coordinates
+0x0040a470 func cam_GetDepthScale hand returns perspective scale factor for given depth, zero if degenerate
+0x0040a4b0 func cam_ProjectBoxCorners hand projects eight box corners with cam_WorldToScreen using corner table
+0x0040a5fa func stub_0040a5fa hand tiny stub that returns 0
+0x0040a60c func anim_InitState hand initialises animation state struct: flags, scale 0x100, palette, speed 0x40, defaults
+0x0040a6f3 func anim_DrawFrame hand draws current animation frame parts with perspective scaling, flip and palette, queues sprites through draw list
+0x0040b00d func anim_QueueSimple hand builds anim state struct from params with flags and scale defaults then calls anim_DrawFrame
+0x0040b1b6 func stub_0040b1b6 hand tiny stub that returns 0
+0x0040b1c8 func anim_GetFrameSizeAndPtr hand looks up frame in anim table 0x4afee0 by set and index, returns frame data ptr and width height shorts
+0x0040b2d3 func anim_GetFramePtr hand looks up frame data pointer in anim table by index and frame, returns 1 if out of range
+0x0040b3b7 func math_Rotate2D hand rotates int pair x y by sin cos fixed values using fixed multiply helper
+0x0040b42e func fx_CopyParam hand copies global 0x4c9c20 into 0x4c9c1c
+0x0040b443 func stub_0040b443 hand tiny stub that returns 0
+0x0040b455 func fx_SetParam hand stores argument into global 0x4c9c1c
+0x0040b468 func fx_InitSplashAnims hand initialises two anim state structs at 0x4e2ec0 and 0x4e7110 with scale 0x100 and sets anim ids
+0x0040b52a func fx_SpawnAtOverlapCenter hand computes centre of overlap between two boxes and fills effect record x y z and counters
+0x0040b651 func fx_DrawStep hand draws one of two anim structs by type at record position and advances counter by 0x80 until 0x300
+0x0040b721 func actor_ApplyPenetration hand converts collision penetration deltas to pos corrections with wall flag masks then calls actor_Move
+0x0040b996 func actor_ApplyPenetrationSimple hand applies penetration deltas to move without clamping, clears velocity y, calls actor_Move
+0x0040ba77 func actor_ApplyPenetrationBasic hand applies penetration deltas and flags then calls actor_Move
+0x0040bb4e func box_CalcPenetration hand compares two boxes on three axes, writes penetration deltas and side flags to globals 0x4cfb82, calls callback at +0x40
+0x0040bda5 func box_CalcPenetrationSlope hand same as box_CalcPenetration but resolves y axis by diagonal slope test between x and z penetration
+0x0040c0e6 func box_CalcPenetrationChild hand like box_CalcPenetrationSlope but uses child box at +0x18 of first object, zero y delta, calls callback at +0x40
+0x0040c42f func box_CalcPenetrationChildFloor hand variant of box_CalcPenetrationChild that always flags z side 4 when no x overlap
+0x0040c778 func box_CalcPenetrationOut hand box overlap deltas on three axes written to out pointers plus side flags, no callback
+0x0040c9b2 func box_CalcPenetrationOut_2 hand identical copy of box_CalcPenetrationOut
+0x0040cbec func script_StartActorCommand hand reads next two script words into actor +0x4e and +0x50, sets state 0, flag 0x4d4bb0
+0x0040cc47 func cutscene_UpdateScroll hand state machine stepping scripted scroll commands from 0x4ce768, calls camlim_Expand, spawns via cmd table, sound ids 0x41cd29
+0x0040d3de func cam_SolveFollowDelta hand iterative solve of camera follow offset from three vectors, clamps z to plus minus 0x140000 outside some stages
+0x0040d552 func math_PolarToXY hand multiplies radius by cos and sin of angle (minus 0x5a0000) via fixed multiply, writes two outputs
+0x0040d5a0 func camlim_Expand hand flag-selected expansion of camera scroll limit globals 0x4ce74e..0x4ce754 using projected x and y
+0x0040d72c func camlim_ExpandSwapped hand like camlim_Expand for left and right flags with swapped sides
+0x0040d7ff func camlim_ProjectX hand perspective-corrects x limit by depth using camera block 0x4ce728..0x4ce730, returns fixed value
+0x0040d890 func camlim_ProjectY hand perspective-corrects y limit by depth using camera block, returns int
+0x0040d919 func handler_RegisterSet hand stores five callback pointers into 28-byte handler table at 0x4ae584 indexed by id minus 1
+0x0040d969 func cam_RotateActorAroundPivot hand rotates actor offset around camera pivot by angle 0x4c3a9c with sin cos, moves actor via actor_Move
+0x0040da4c func cam_UpdateIdleTimer hand counts frames up to 300 when scroll limit not reached, sets flag 0x4c9b90 to 400 then decrements
+0x0040dae1 func math_RotateIntPair hand rotates two int values by sin cos fixed using fixed multiply helper
+0x0040db4f func anim_DrawRotatedQuads hand draws anim frame parts as rotated perspective quads, bounding box centre pivot, falls back to 4x4 pixel dot
+0x0040e4d0 func stage12_RegisterHandlers hand sets stage12 run function and data table, registers handler sets 0x4f 0x50 0x5b
+0x0040e568 func hud_UpdateDwarfSelect hand passes three flags from lead dwarf type byte at +0xae to HUD function
+0x0040e5ef func stage12_Run hand plays sounds, loads stage12_stadb1.pln and st12 palette, runs per-frame loop of camera update, actors, draw, input until exit
+0x0040e77d func cam_InitDefaults hand clears 0x48-byte camera block at 0x4ce720 and sets default depth, limits and view constants, copies backup
+0x0040e84f func stage_SetFarClip hand calls two helpers with value minus 5000 for far clip depth
+0x0040e87a func cam_UpdateFollow hand backs up camera, projects screen corners, runs follow callback, eases camera towards target clamped by scroll limits
+0x0040ec00 func enemy_InitStage12 hand inits anim state, hitbox and body for stage12 enemy actor, sets speed and hp from table
+0x0040ed8f func enemy_UpdateStage12 hand state machine for stage12 enemy: idle timer, then chase nearest dwarf by distance
+0x0040f1cc func enemy_CollideStage12 hand calls box_CalcPenetrationChild with player body and current enemy
+0x0040f203 func enemy_OnHitStage12 hand on hit subtracts damage from hp, spawns five debris actors and kills enemy at zero hp, else sets hurt state 0x103
+0x0040f52e func enemy_DrawStage12 hand draws enemy anim at actor position with anim_DrawFrame then fx_DrawStep
+0x0040f58d func hopper_Init hand inits hopper enemy anim, hitbox, hp from table, initial jump velocities, body object
+0x0040f718 func hopper_Update hand applies gravity, bounces off walls and edges, random rand-based hop velocities, moves actor
+0x0040fa79 func hopper_Collide hand calls box_CalcPenetrationChild with player body and current hopper
+0x0040fab0 func hopper_OnHit hand on hit subtracts hp, spawns six debris actors at death with sound 5, else sets hurt state and knockback
+0x0040fe97 func hopper_Draw hand draws hopper anim at actor position then fx_DrawStep
+0x0040fef6 func brute_Init hand inits brute enemy anim, hitbox, hp from table, body object, same layout as enemy_InitStage12
+0x00410085 func brute_Update hand state machine: idle timer, chase nearest dwarf by x distance with wide thresholds, attack swing with hit body at sound 6
+0x00410523 func brute_Collide hand calls box_CalcPenetrationChild with player body and current brute
+0x0041055a func brute_OnHit hand on hit subtracts hp, at zero plays sound 6 and sets death state 0x104 facing away, else hurt state 0x103
+0x004106e0 func brute_Draw hand draws brute anim at actor position then fx_DrawStep
+0x0041073f func boss1_Init hand inits multi-part boss anim, hitbox, timers, three limb flags zero, reads start delay from script pointer
+0x00410883 func boss1_Update hand boss state machine with idle timer, spawns arm actors type 0x6c at frame triggers, per-limb anim timers, sounds 5 6 7
+0x004110ff func boss1_Draw hand draws boss body by state plus up to three limb overlays through anim_QueueSimple
+0x0041148f func bossarm_Init hand inits boss arm actor, reads arm type from script pointer, hitbox, initial state by type
+0x00411631 func bossarm_Update hand arm state machine: types 0-4, chase nearest dwarf, timed attack, sets limb flag in owner, spawns projectile type 0x6f
+0x0041279e func entF8D8_OnOverlap hand collision filter: forwards overlap to 0040c0e6 with the two objects
+0x004127f5 func entF8D8_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x00412b68 func entF8D8_Draw hand draws sprite at object position via 0040a6f3
+0x00412bc7 func entF8D8_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00412c54 func entF8D8_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x00412d4e func entF8F8_OnOverlap hand collision filter: forwards overlap to 0040c0e6 with the two objects
+0x00412dfa func entF8F8_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x00412eb2 func entF8F8_Draw hand draws sprite at object position via 0040a6f3
+0x00412f00 func entF8F8_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00412fb2 func ent_UpdateState hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7 (was entF8F8_Update)
+0x0041314f func entF920_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x004131e1 func entF920_Draw hand draws sprite at object position via 0040a6f3
+0x0041322f func entF920_Init hand provisional object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x004133f7 func entF920_Update hand provisional per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x004138b8 func entF940_CheckOverlap hand collision filter: forwards overlap to 0040c0e6 with the two objects (was entF940_OnOverlap)
+0x004138ff func entF940_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x004139df func entF940_Draw hand draws sprite at object position via 0040a6f3
+0x00413ab7 func entF940_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00413b58 func entF940_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x00413c13 func ent3CB1_OnStrike hand sets hit data 3 and mode 2 then fires object callback +0x40
+0x00413c63 func ent3CB1_Draw hand draws sprite at object position via 0040a6f3
+0x00413cb1 func ent3CB1_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00413d65 func ent3CB1_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x00413df5 func entF950_Draw hand draws sprite at object position via 0040a6f3
+0x00413e43 func entF950_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00413efc func entF950_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x00414014 func entF978_OnStrike hand sets hit data 3 and mode 2 then fires object callback +0x40
+0x00414064 func entF978_OnCollide hand provisional collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x004140b4 func entF978_Draw hand draws sprite at object position via 0040a6f3
+0x00414102 func entF978_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x004141d4 func entF978_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x004142a8 func entF988_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x0041431c func entF988_Draw hand draws sprite at object position via 0040a6f3
+0x00414450 func entF988_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00414509 func entF988_Update hand per-frame update with AI / hit spawn (00407bc4, 00496690, 0045a7e5)
+0x00414633 func entF990_SetAnimFlag hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102 (was entF990_OnCollide)
+0x004146a1 func entF990_Draw hand draws sprite at object position via 0040a6f3
+0x00414700 func entF990_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00414894 func entF990_Update hand per-frame update with AI / hit spawn (00407bc4, 00496690, 0045a7e5)
+0x00415188 func box_OnOverlap hand collision filter: forwards overlap to 0040c0e6 with the two objects (was entF9E0_OnOverlap)
+0x004151bf func entF9E0_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x0041543e func entF9E0_Draw hand draws sprite at object position via 0040a6f3
+0x0041549d func entF9E0_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00415562 func entF9E0_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x00415618 func entF9F8_OnStrike hand sets hit data and mode 2 then fires object callback +0x40
+0x0041565f func entF9F8_Draw hand draws sprite at object position via 0040a6f3
+0x004156ad func entF9F8_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x004157db func entF9F8_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x004159db func entF9F8_Draw_2 hand draws sprite at object position via 0040a6f3
+0x00415b10 func dwarf_Init_15b10 hand dwarf player init: sets anim table 004afa18, bounds, links player slots DAT_004be0a0 and floor 0041f7e5
+0x00415d15 func dwarf_PickAttackAnim hand chooses attack animation 0x106-0x10f from buttons DAT_004c9b8c and weapon; hurt state 0x112
+0x00415e32 func dwarf_PickJumpBlockAnim hand jump/kick/special anim 0x105 or 0x10b from buttons DAT_004c3a6a, adjusts vertical speed
+0x00415efd func dwarf_Update hand main dwarf player state machine: input, move, attacks, scroll lock, calls floor collide 0041f9d8
+0x0041771d func entFAC0_OnOverlap hand provisional collision filter: forwards overlap to 0040c0e6 with the two objects
+0x00417754 func entFAC0_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x00417b1a func entFAC0_Draw hand draws sprite at object position via 0040a6f3
+0x00417b79 func entFAC0_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00417c84 func entFAC0_Update hand provisional per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x00417df2 func entFAE0_OnStrike hand sets hit data 3 and mode 2 then fires object callback +0x40
+0x00417e5e func entFAE0_Draw hand draws sprite at object position via 0040a6f3
+0x00417eac func entFAE0_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x004180a0 func entFAE0_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x0041822c func entFB28_HandleCollision hand collision filter: forwards overlap to 0040c0e6 with the two objects (was entFB28_OnOverlap)
+0x004183cb func entFB28_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x004185f2 func entFB28_Draw hand draws sprite at object position via 0040a6f3
+0x004187f2 func entFB28_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00418a9d func entFB28_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x00419478 func entFB88_OnStrike hand sets hit data 3 and mode 2 then fires object callback +0x40
+0x004194d8 func entFB88_OnOverlap hand provisional collision filter: forwards overlap to 0040c0e6 with the two objects
+0x0041951f func entFB88_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x004196a6 func entFB88_Draw hand draws sprite at object position via 0040a6f3
+0x0041970b func entFB88_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00419945 func entFB88_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x004199d0 func entFBC8_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x00419b1f func entFBC8_Draw hand draws sprite at object position via 0040a6f3
+0x00419b6d func entFBC8_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00419c43 func entFBC8_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x00419e7a func entFC00_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x00419f9c func entFC00_Draw hand draws sprite at object position via 0040a6f3
+0x00419fea func entFC00_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x0041a0a5 func entFC00_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x0041a135 func entFC20_Draw hand draws sprite at object position via 0040a6f3
+0x0041a190 func entFC20_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x0041a60e func entFC20_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x0041aa98 func entFC20_DrawOverlay hand extra draw pass for object with 0040a2a6 projected overlay
+0x0041ae25 func entFC20_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x0041b0f4 func col_OnSolidTouchDwarf hand solid platform/wall touch handler; calls col_ResolveAabbOverlap 0041b578, nudges x velocity of both objects, sets ride flags
+0x0041b3cf func col_OnSolidTouchPush hand non-solid-type touch: shoves object via 004087f3 using +0xd4/+0xd0, resolves overlap with 0041b578
+0x0041b48a func col_OnSolidTouchPush_2 hand variant of col_OnSolidTouchPush: push by +0xd4-+0xd0 within y range, then 0041b578
+0x0041b539 func col_MarkRidingSolid hand if other object type is 0x81 solid, sets flag +0xe8=1 on owner
+0x0041b578 func col_ResolveAabbOverlap hand AABB overlap test of two objects with penetration depth per side; sets DAT_004cfb80=1 and fires callback +0x40
+0x0041bb53 func col_SetBoundsRelativeFromScript hand reads three script words via DAT_004cfba8 and adds to position to set collision box +0xa,+0xe,+0x12
+0x0041bbd3 func col_ComputeOverlapDepth hand computes box overlap distances between two objects, fires collision callback, sets climb/ledge flags
+0x0041bead func col_SetBoundsAbsoluteFromScript hand reads three script words via DAT_004cfba8 into collision box +0xa,+0xe,+0x12
+0x0041bf0f func col_OnTouchActorType1 hand if current object type is 1 (actor) calls 0040bb4e with both objects
+0x0041bf48 func ai_SteerTowardTarget hand enemy AI: computes pad direction bits toward target position table 004afe50 via 00409f3a distance/angle
+0x0041c1a0 func stage_GetNameByOrder hand returns stage name string pointer from table for order index, or GAME_END; uses 004afeb8/004afec9 order lists
+0x0041c209 func stage_GetIdByOrder hand returns stage id (table value minus 1) for order index in the stage order list
+0x0041c24d func stage_GetOrderOfId hand finds position of stage id in the 16-entry order list, 0 if absent
+0x0041c2c2 func stage_GetNextStage hand finds stage id in order list and returns the next entry minus 1; 1 if not found
+0x0041c343 func pass_InterleaveBits hand spreads 16 bit pairs: bit-shuffles a 32-bit value for password encoding
+0x0041c3cc func pass_DeinterleaveBits hand inverse of pass_InterleaveBits, bit permutation for password decode
+0x0041c455 func pass_EncodeCode hand builds 8-letter A-Z password from three nibbles, xor 0x15b63c7a, base 26, checksum char at index 3
+0x0041c573 func pass_DecodeCode hand decodes 8-letter password, verifies base-26 checksum, recovers three nibbles; nonzero on failure
+0x0041c6d2 func pack_LoadCommon hand loads common/tddlow.pwd or .pwh via 00402f82 into pack slots and relocates pointers 0041cc23
+0x0041c76a func game_RunStages hand outer game loop: picks stage or demo, sprintf demo/stage%d.dem, runs stage_Run 0041d3ea per stage, handles game end
+0x0041cb6a func gfx_ResetDirtyRect hand resets dirty rectangle bounds to 0x140 x 0xe0 screen extents
+0x0041cb99 func gfx_AddDirtyRect hand expands the dirty rectangle min/max bounds with given rect
+0x0041cc18 func stub_0041cc18 hand empty function, only returns
+0x0041cc23 func pack_RelocatePointers hand walks sprite pack header converting stored offsets into absolute pointers (3-level tables)
+0x0041cd29 func pack_LoadPack hand builds path with sprintf (stage%d/ name .pwd/.pwh) or common, loads via 00402f82, relocates pointers
+0x0041cf41 func pack_Free hand frees one loaded sprite pack via 00401d06 and clears its slot if flagged freeable
+0x0041cfc4 func pack_FreeAll hand loops all pack slots downward calling pack_Free
+0x0041d004 func pack_FreeUnused hand clears flagged pack slots in table 004afee0 without freeing
+0x0041d0a1 func input_UpdateButtons hand per-player pad state edge detection; handles start+select exit and pause trigger; fills pressed table 004e6900
+0x0041d28e func stage_LoadPackList hand loads the stage pack list entries (types 0/1) via 0041cd29 and copies stage flags
+0x0041d3ea func stage_Run hand sets up and runs one stage: frees packs, shows title, loads maps and packs, resets game state; stage title STREETS_OF_BRONX table
+0x0041d65a func game_PauseLoop hand pause screen: waits for start press, draws pause sprite via 0040b00d, restores state after unpause
+0x0041d818 func game_TickExitTimer hand counts down exit/fade timer DAT_004c386a, plays sound 0x14 when ending
+0x0041d8ad func game_RequestExit hand sets exit timer DAT_004c386a and exit reason DAT_004c3ab6 if not already set
+0x0041d8d9 func pack_LoadPackList hand loads a list of packs (type 1) and plays/draws type 5 pln screens until input
+0x0041da19 func stage_ShowTitleIntro hand stage start title: bouncing stage name text drawn centered via 004294d0 and sound 0xe
+0x0041db53 func stage_DrawLoadingBar hand draws stage name and percent loading text, sprintf-like via 0042931b, two frames
+0x0041dcbe func stage_ResetTimers hand zeroes DAT_004c03c8 and DAT_004c3a64 counters
+0x0041dcdd func menu_ContinuePrompt hand CONTINUE screen with Yes / No choice and countdown 600; stglogo_continue.pln background
+0x0041e059 func menu_AbortGamePrompt hand Abort game? Yes / No prompt during pause, returns choice
+0x0041e2ab func input_ReadPadOrDemo hand reads demo (.dem) input stream or live pad into per-player button tables with run-length repeat
+0x0041e6b7 func game_SetContinues hand sets DAT_004c03c4 (continues remaining) to 5
+0x0041e6c9 func stage_ShowCleared hand STAGE CLEARED screen: animated stage name and text, waits for button, advances stage
+0x0041e990 func stage_RegisterStage3 hand registers stage 3 setup function 0041ebda and registers entity type callbacks via 0040d919 for many types
+0x0041ebda func stage3_Setup hand loads stage3 bg03/fg03 pln, jarda, st03 pal, packs, resets camera, runs stage 3 loop
+0x0041ed87 func stage3_DrawBackdrop hand draws backdrop layers with 004021cb/00402267 scrolling by camera offsets
+0x0041ee10 func camera_Update_1ee10 hand follows player objects, clamps scroll deltas to 0x80000, updates camera and scroll layers
+0x0041f423 func camera_Reset hand memset camera state 0x48 bytes and initialises scroll limits and default offsets
+0x0041f534 func stub_0041f534 hand empty function, only returns
+0x0041f540 func floor_BuildSegmentSlopes hand takes floor polyline points, computes per-segment slope reciprocals in fixed point
+0x0041f7e5 func floor_FindSegmentAtX hand finds floor segment whose x range contains position; returns index or -1
+0x0041f9d8 func obj_MoveAndCollideFloor hand moves object by velocity against floor segments, walls and ledges, large collision resolve; falls back to 004087f3
+0x00421ac4 func floor_DebugDrawSegments hand draws floor polyline segments as lines via 004025ef when on screen
+0x00421be0 func pal_ColorDistSq hand squared euclidean distance between two double RGB triples
+0x00421c31 func pal_FindNearestColor hand scans palette indices 0x40-0xef for nearest color to the given RGB
+0x00421cbd func pal_BuildColorTables hand converts 256 palette entries to doubles and builds scaled colour lookup
+0x00421f20 func ent2CE0_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00421fde func dwarf_UpdateAI hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7 (was ent2CE0_Update)
+0x00422435 func ent2D08_Draw hand draws sprite at object position via 0040a6f3
+0x00422483 func ent2D08_OnStrike hand sets hit data 3 and mode 2 then fires object callback +0x40
+0x004224ca func ent2D08_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x0042258e func ent2D08_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00422726 func ent2D08_Update hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7
+0x00422ad0 func ent2DA8_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x00422c8d func ent2DA8_CheckOverlap hand collision filter: forwards overlap to 0040c0e6 with the two objects (was ent2DA8_OnOverlap)
+0x00422cd4 func ent2DA8_Draw hand draws sprite at object position via 0040a6f3
+0x00422d33 func ent2DA8_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00422f6b func ent2DA8_StateMachineUpdate hand per-frame state machine update: saves prev position, moves, runs 00409cb3 anim and 004080b7 (was ent2DA8_Update)
+0x004238cd func ent2E08_OnCollide hand collision reaction: on DAT_004cfb80 1/2 triggers 0040b996 hit/stun and state 0x101/0x102
+0x00423a7f func ent2E08_CheckOverlap hand collision filter: forwards overlap to 0040c0e6 with the two objects (was ent2E08_OnOverlap)
+0x00423ad6 func ent2E08_Draw hand draws sprite at object position via 0040a6f3
+0x00423bad func ent2E08_Init hand object init: sets anim table, state, hitbox via 0040a60c/0040a073 and 00409cb3
+0x00423d48 func en00_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00423f04 func en00_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x004240a6 func en00_OnTouch hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x004240ed func en00_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x0042414c func en01_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x004242c4 func en01_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x0042484a func en01_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x00424a19 func en01_OnTouch hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x00424a60 func en01_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00424abf func en02_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00424b5b func en02_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00424c93 func en02_OnPenetrationHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim (was en02_OnHit)
+0x00424d41 func en02_OnHitCallback hand hit callback: sets damage DAT_004cfb82, hit type DAT_004cfb80, calls hit function pointer +0x40 on enemy
+0x00424db2 func en02_Draw hand provisional enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00424e00 func en03_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00424f95 func en03_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x004259e5 func en03_OnTouch hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x00425a8e func en03_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x00425d96 func en03_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00425df5 func en04_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00425f01 func en04_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00426114 func en04_OnTouch hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x0042614b func en04_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x004261d4 func en04_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00426281 func en04_OnHitCallback hand hit callback: sets damage DAT_004cfb82, hit type DAT_004cfb80, calls hit function pointer +0x40 on enemy
+0x004262d8 func en05_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00426473 func en05_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x004265df func en05_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x004268a3 func en05_OnTouch hand provisional enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x004268ea func en05_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00426949 func en06_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00426a9e func en06_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x0042703f func en06_CalcContactDamage hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8 (was en06_OnTouch)
+0x00427076 func en06_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x0042724b func en06_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x004272aa func en07_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00427492 func en07_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00427a17 func en07_OnTouch hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x00427ae7 func en07_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x004284b3 func en07_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x004285d8 func en08_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x004287cf func en08_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00428a42 func en08_OnHitCallback hand hit callback: sets damage DAT_004cfb82, hit type DAT_004cfb80, calls hit function pointer +0x40 on enemy
+0x00428b2b func en08_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x00428dce func en08_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00428e2d func en09_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00428f47 func en09_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00429180 func en09_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x004291e9 func en09_OnTouch hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x00429220 func font_SetSheet hand stores font sprite sheet pointer, index and glyph count in DAT_004c1640..4c1644; default 8 glyphs
+0x00429279 func font_MeasureString hand returns pixel width of string using glyph width table DAT_004b3128, space advance 0xe
+0x0042931b func font_IntToString hand converts int to decimal string with optional minus sign, copies via strcpy 496830
+0x004293ad func font_DrawChar hand draws one glyph sprite via 402b5b from sheet; returns advance width from table
+0x0042949e func font_DrawInt hand formats integer with font_IntToString then font_DrawString at x,y
+0x004294d0 func font_DrawString hand draws string char by char with font_DrawChar; space advances 0xe pixels
+0x00429545 func gfx_ClearBufferBelowRow hand memset zero rows of 8-bit buffer below row param_3 (header width, height)
+0x00429597 func gfx_BlitKeyedBitmapA hand copies 8-bit bitmap into buffer at x,y skipping zero pixels color key; 4-byte headers
+0x00429652 func gfx_BlitKeyedBitmapB hand copies 8-bit bitmap into buffer skipping zero pixels; 6-byte source header variant
+0x00429720 func stage_DeleteTempFiles hand sprintf wildcard, __findfirst/__findnext loop deleting non-directory files except readme.txt via remove
+0x00429800 func stage_CopyStageFiles hand chdir, reads laststg.dat, copies stage<n> .plh/.pln files (LZOpenFile, LZCopy, CopyFileA) to temp dir
+0x00429dd1 func sys_FatalCopyError hand sets error flag then 46412b and longjmp to main loop recovery point
+0x00429e10 func stage7_Register hand installs stage 7 run function 429e9f in stage table; registers object classes 0x5c,0x5d,0x7f with 40d919
+0x00429e9f func stage7_Run hand stage 7 main loop: loads stage7 bg07.pln and st07.pal, per-frame camera, update, draw until done
+0x00429ff8 func stage7_DrawBackdrop hand sets sprite pack, draws backdrop sprite 40a6f3 then rotating quad 42a8d9
+0x0042a0b8 func camera_Update_2a0b8 hand smooth scroll camera follow of player with 0x80000 clamp and bounds flags DAT_004ce75a
+0x0042a66f func camera_Init_2a66f hand zeroes camera block DAT_004ce720 via memset, sets scroll limits 0xf000/0x1000, copies to backup
+0x0042a7e5 func gfx_ResetFiveLayers hand calls 40b1b6 five times to reset five layer or sprite slots
+0x0042a8d9 func gfx_DrawRotatedQuad hand projects four rotated corners with 40a2a6, picks nearest vertex, draws textured quad 402877 and 402982
+0x0042ada0 func math_FixedMul hand 16.16 fixed multiply of two ints via 64-bit product
+0x0042adbc func math_FixedDiv hand 16.16 fixed divide using __alldiv, returns 0 on zero divisor
+0x0042ae10 func math_MulDiv hand computes (a*b)/c with 64-bit __alldiv, zero if divisor 0
+0x0042ae53 func math_FixedSqrt hand converts int to double, 497270 (sqrt) then __ftol
+0x0042ae93 func math_FixedAtan2 hand divides args by constant DAT_004a8140 and calls 4972a8 (atan2) then __ftol
+0x0042aef8 func stub_0042aef8 hand tiny stub that only returns
+0x0042af03 func stub_0042af03 hand tiny stub that only returns
+0x0042af0e func stub_0042af0e hand tiny stub that only returns
+0x0042af19 func stub_0042af19 hand tiny stub that only returns
+0x0042af24 func stub_0042af24 hand tiny stub that only returns
+0x0042af2f func snd_PlaySfx hand plays sound effect: type 1 common index or stage index+0x11 via 463c13, bounds check DAT_004b343c
+0x0042afaa func snd_StartLoopSfx hand marks sound looping in DAT_004c1370 table and starts via 463c8e
+0x0042b03a func snd_StopLoopSfx hand stops looping sound index via 463d09 and clears flag; -1 if out of range
+0x0042b098 func snd_StopAllLoopsKeepFlags hand loops all sounds calling snd_StopLoopSfx but restores loop flags
+0x0042b0ee func snd_ResumeLoops hand restarts every sound flagged looping via 463c8e
+0x0042b13e func snd_LoadStageSounds hand memset flags, loads sound/common/fx*.wav and sound/stage<n>/fx*.wav via sprintf and 463af0
+0x0042b380 func en10_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x0042b4dd func en10_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x0042be15 func en10_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x0042bf98 func en10_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x0042c104 func en11_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x0042c498 func en11_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x0042d345 func en11_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x0042d393 func en11_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x0042d6f5 func en11_OnTouch hand provisional enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x0042d723 func en11_OnGrabbed hand enemy grabbed-by-player handler: 455959, 45b112, 45b5ed set grab state, plays sfx 42af2f
+0x0042d930 func en11_OnHitCallback hand hit callback: sets damage DAT_004cfb82, hit type DAT_004cfb80, calls hit function pointer +0x40 on enemy
+0x0042d99a func en12_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x0042db72 func en12_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x0042dc2d func en12_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x0042dcbe func en12_OnTouch hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x0042dcec func en12_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x0042de99 func en13_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x0042df3d func en13_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x0042e035 func en13_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x0042e090 func stage11_Register hand installs stage 11 run function 42e14b; registers object classes 0x38,0x39,0x46,0x47 with 40d919
+0x0042e14b func stage11_Run hand stage 11 main loop: loads stage11 jarda, bg11.pln and st11.pal, camera update, draw until done
+0x0042e318 func stage11_InitCamera hand memset camera block, sets stage 11 scroll origin and limits, copies backup
+0x0042e408 func stage11_DrawBackdrop hand projects four corner points 40a2a6 and draws backdrop quad 4023b0
+0x0042e4ce func stage11_UpdateCamera hand stage 11 smooth scroll camera follow with clamping, uses 40a388 and 40d5a0
+0x0042ec50 func en14_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x0042ede2 func en14_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x0042f480 func en14_SetPlayerHitState hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8 (was en14_OnTouch)
+0x0042f51a func en14_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x0042f8fa func en15_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x0042f98a func en15_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x0042fa45 func en15_OnHitCallback hand hit callback: sets damage DAT_004cfb82, hit type DAT_004cfb80, calls hit function pointer +0x40 on enemy
+0x0042fa95 func en15_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x0042fae3 func en16_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x0042fc78 func en16_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00430a8d func en16_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x00430c46 func en16_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00430ca5 func en17_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00430da9 func en17_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00430ed6 func en17_OnPenetrationHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim (was en17_OnHit)
+0x00431043 func en17_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00431091 func en18_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00431285 func en18_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00431b1f func en18_CheckContactDamage hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8 (was en18_OnTouch)
+0x00431b66 func en18_OnHitCallback hand hit callback: sets damage DAT_004cfb82, hit type DAT_004cfb80, calls hit function pointer +0x40 on enemy
+0x00431be0 func en18_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x00431d96 func en18_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00431df5 func en19_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00431f90 func en19_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x004328d6 func en19_OnTouch hand provisional enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x0043291d func en19_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x00432ac9 func en19_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00432b28 func en20_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00432bc4 func en20_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00432d38 func en20_OnTouch hand enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x00432e0a func en20_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x00432e86 func en20_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00432ed4 func en21_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00432ff9 func en21_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00433bb5 func en21_OnTouch hand provisional enemy body-touch callback: calls 40c0e6 contact damage against the player actor DAT_004d4bb8
+0x00433bfd func en21_OnHit hand enemy hit handler: reads hit type DAT_004cfb80 and damage DAT_004cfb82, reduces hp, picks hurt or death anim
+0x00433d2c func en21_Draw hand enemy draw: sprite via 40a6f3 at 16.16 position, shadow/outline 40b651
+0x00433d8b func en22_Init hand enemy init: sets sprite pack via 40a60c, animation table, hitbox via 40a073, hp from difficulty DAT_004c9ad4
+0x00433f3b func en22_Update hand enemy per-frame state machine: switch on state +0x48, AI movement, spawns via 407bc4, applies velocity 4087f3, 409cb3
+0x00434c22 func obj01_TouchStub hand small touch callback forwarding to overlap helper 40c0e6
+0x00434c69 func obj01_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x00434e2d func obj01_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x00434e8c func obj01_Init hand object init: sets sprite anim table via 0040a60c, state and bounds
+0x00434f87 func obj01_Update hand per-frame object update: moves and advances animation via 00409cb3
+0x004351a4 func obj01_OnHitOrTouch_2 hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x00435277 func obj01_Draw_2 hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x004352d6 func obj02_Init hand provisional object init: sets sprite anim table via 0040a60c, state and bounds
+0x0043549b func obj02_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x00435737 func obj02_TouchStub hand small touch callback forwarding to overlap helper 40bb4e
+0x004357a0 func obj02_CalcTouchPenetration hand small touch callback forwarding to overlap helper 40bda5 (was obj02_TouchStub_2)
+0x004357d7 func obj02_OnHitOrTouch_2 hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x004358b9 func obj02_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x00435918 func obj03_Init hand object init: sets sprite anim table via 0040a60c, state and bounds
+0x00435ab3 func obj03_UpdateAI hand per-frame enemy or boss update: state machine, movement, attacks via 00409cb3
+0x00435fa0 func obj03_TouchStub hand provisional small touch callback forwarding to overlap helper 40c0e6
+0x00435fd7 func obj03_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x0043619d func obj03_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x004361fc func obj_InitGeneric hand object init: sets sprite anim table via 0040a60c, state and bounds (was obj04_Init)
+0x004363c3 func obj04_Update hand per-frame object update: moves and advances animation via 00409cb3
+0x00436403 func dwarf_DrawShadowQuad hand helper, uncertain role; calls 401f67 4024c4 40a2a6 (was misc_00436403)
+0x004367b9 func obj05_Init hand object init: sets sprite anim table via 0040a60c, state and bounds
+0x004368ac func obj05_Update hand per-frame object update: moves and advances animation via 00409cb3
+0x00436a58 func obj05_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x00436b90 func map_DDrawInitFailed hand tile map helper: bounds-checks map tile index, calls 00436bdc (was map_ClampTileIndex)
+0x00436bdc func map_FreeMapData hand reads tile entry from map layer by x,y coordinates (was map_GetTile)
+0x00436d0f func win_InitDirectDrawAndPal hand loads tile attribute table using 004372d4 and 0043c260 (was map_LoadTileAttrs)
+0x00436d74 func map_ReadSurfaceData hand returns pointer into layer table for index (was map_GetLayerPtr)
+0x00436dd1 func map_DrawTiles hand draws map tile rows to screen using layer table and clip
+0x004371b9 func map_ClipRect hand provisional clips tile rectangle against viewport via 0043857c
+0x004372d4 func ddraw_InitDirectDraw hand builds tile lookup table from map data with 00436b90 (was map_BuildTileTable)
+0x00437544 func map_ClearScrollState hand advances map scroll position using 00437ee7 (was map_ScrollStep)
+0x0043760e func map_UpdateScroll hand updates scroll position, calls map_DrawTiles and map_ScrollStep
+0x00437676 func map_ScrollWrap hand wraps map scroll via map_ScrollStep and map_UpdateScroll
+0x0043769a func map_Cleanup hand writes tile entry via map_GetTile helper (was map_SetTile)
+0x004376f0 func map_BlitStrip hand blits layer strip rows to surface using map_DrawTiles, clipped
+0x00437874 func misc_00437874 hand provisional helper, uncertain role; calls
+0x004378c6 func map_DrawSprite hand draws sprite onto tile layer via map_DrawTiles
+0x004379ca func map_DrawSpriteClipped hand clipped variant of map_DrawSprite
+0x00437b1d func misc_00437b1d hand provisional helper, uncertain role; calls
+0x00437b88 func snd_PlaySound hand helper, uncertain role; calls (was misc_00437b88)
+0x00437c48 func pal_SetPalette hand helper, uncertain role; calls 437d51 437ee7 43857c (was misc_00437c48)
+0x00437cbe func map_RenderLoop hand helper, uncertain role; calls 436dd1 43857c (was misc_00437cbe)
+0x00437d51 func map_FillRect hand fills rectangle of tile layer via map_DrawTiles
+0x00437ee7 func map_Multiply hand map math helper calling 0048d379 (was map_Mul)
+0x00437f58 func misc_ReturnOne hand helper, uncertain role; calls (was misc_00437f58)
+0x00437f6d func win_InitDirectDraw hand helper, uncertain role; calls 436b90 436d74 43760e (was misc_00437f6d)
+0x00438128 func dispdd_SwitchMode hand helper, uncertain role; calls 436b90 437ee7 43857c (was misc_00438128)
+0x00438295 func gfx_InitDisplay hand helper, uncertain role; calls 436b90 43760e 4378c6 (was misc_00438295)
+0x0043840c func dd_InitWindow hand helper, uncertain role; calls 436b90 43857c 43c3ae (was misc_0043840c)
+0x0043853d func map_RenderFrame hand helper, uncertain role; calls 4378c6 437b88 43857c (was misc_0043853d)
+0x0043857c func win_PumpMessages hand map clamp helper (was map_Min)
+0x004385bd func map_RedrawLayers hand helper, uncertain role; calls 436d74 437cbe (was misc_004385bd)
+0x004385d7 func map_VsyncWait hand map helper (was map_Max)
+0x00438608 func map_TestMax hand copies tile region using map_Max helper (was map_CopyRegion)
+0x00438780 func obj06_Init hand object init: sets sprite anim table via 0040a60c, state and bounds
+0x0043889f func obj06_OnMessage hand collision message handler checking DAT_004cfb80 touch or hit value
+0x004388ff func obj06_UpdateState hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state (was obj06_OnHitOrTouch)
+0x00439255 func obj06_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x0043930b func obj06_OnHitOrTouch_2 hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x0043942f func obj06_OnMessage_2 hand collision message handler checking DAT_004cfb80 touch or hit value
+0x0043947f func obj07_Init hand object init: sets sprite anim table via 0040a60c, state and bounds
+0x0043954a func obj07_UpdateAI hand per-frame enemy or boss update: state machine, movement, attacks via 00409cb3
+0x00439afd func obj07_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x00439b94 func obj07_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x00439dcc func obj07_OnMessage hand collision message handler checking DAT_004cfb80 touch or hit value
+0x00439e5b func misc_00439e5b hand provisional helper, uncertain role; calls
+0x00439e6d func misc_00439e6d hand provisional helper, uncertain role; calls
+0x00439f11 func obj07_OnMessage_2 hand collision message handler checking DAT_004cfb80 touch or hit value
+0x0043a110 func stub_0043a110 hand returns immediately, empty handler
+0x0043a11b func stub_0043a11b hand returns immediately, empty handler
+0x0043a126 func stub_0043a126 hand returns immediately, empty handler
+0x0043a131 func stub_0043a131 hand returns immediately, empty handler
+0x0043a13c func obj07_CalcCollision hand collision message handler checking DAT_004cfb80 touch or hit value (was obj07_OnMessage_3)
+0x0043a5a0 func obj07_OnMessage_4 hand provisional collision message handler checking DAT_004cfb80 touch or hit value
+0x0043a5eb func misc_0043a5eb hand provisional helper, uncertain role; calls
+0x0043a697 func obj07_OnMessage_5 hand collision message handler checking DAT_004cfb80 touch or hit value
+0x0043aac5 func obj08_Init hand object init: sets sprite anim table via 0040a60c, state and bounds
+0x0043acff func obj08_Update hand per-frame object update: moves and advances animation via 00409cb3
+0x0043ae29 func obj08_RemoveCollisionEntry hand collision message handler checking DAT_004cfb80 touch or hit value (was obj08_OnMessage)
+0x0043aef2 func obj08_DrawComplex hand object draw: multi-part sprite drawing with 0040a6f3
+0x0043b1b2 func obj08_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x0043b552 func misc_0043b552 hand provisional helper, uncertain role; calls
+0x0043b5f6 func obj08_CheckCollision hand collision message handler checking DAT_004cfb80 touch or hit value (was obj08_OnMessage_2)
+0x0043b7a0 func misc_0043b7a0 hand provisional helper, uncertain role; calls
+0x0043b820 func obj08_TouchStub hand provisional small touch callback forwarding to overlap helper 40bb4e
+0x0043b850 func stage2_RegisterObjects hand registers stage 2 object type callbacks via 0040d919 and sets stage loader 0043b902
+0x0043b902 func stage2_Load hand stage 2 loader: loads stage2 map, sprite packs and layers, sets up scroll
+0x0043ba8d func stage2_InitCamera hand stage 2 setup: sets camera and layer parameters after load
+0x0043bbab func stage2_RunFrame hand stage 2 per-frame logic: scroll camera, spawn enemies by position, trigger events
+0x0043c136 func stage2_InitGameVars hand helper, uncertain role; calls (was misc_0043c136)
+0x0043c260 func pal_CreateOverlayWindow hand opens .pal file via 0046601a and reads palette (was pal_LoadFile)
+0x0043c32c func win_ApplyWindowSettings hand applies loaded palette entries (was pal_Apply)
+0x0043c3ae func pal_ShowWindow hand fades palette using pal_LoadFile data (was pal_Fade)
+0x0043c420 func obj09_Init hand object init: sets sprite anim table via 0040a60c, state and bounds
+0x0043c5f5 func obj09_Update hand per-frame object update: moves and advances animation via 00409cb3
+0x0043c86e func obj09_DrawComplex hand object draw: multi-part sprite drawing with 0040a6f3
+0x0043cc2d func obj09_OnCollisionMessage hand collision message handler checking DAT_004cfb80 touch or hit value (was obj09_OnMessage)
+0x0043cc69 func obj09_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x0043cdd8 func misc_0043cdd8 hand provisional helper, uncertain role; calls 40bb4e
+0x0043ce79 func obj10_Init hand object init: sets sprite anim table via 0040a60c, state and bounds
+0x0043cf1f func obj10_UpdateGravity hand per-frame object update: moves and advances animation via 00409cb3 (was obj10_Update)
+0x0043cfb1 func obj10_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x0043cff9 func obj10_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x0043d1f5 func obj10_OnMessage hand collision message handler checking DAT_004cfb80 touch or hit value
+0x0043d262 func obj_InitSplash hand object init: sets sprite anim table via 0040a60c, state and bounds (was obj11_Init)
+0x0043d402 func obj11_UpdateAI hand per-frame enemy or boss update: state machine, movement, attacks via 00409cb3
+0x0043dc9e func obj11_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x0043dcf7 func obj11_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x0043df6e func stub_0043df6e hand returns immediately, empty handler
+0x0043df79 func obj11_Update hand provisional per-frame object update: moves and advances animation via 00409cb3
+0x0043e039 func obj11_UpdateAI_2 hand per-frame enemy or boss update: state machine, movement, attacks via 00409cb3
+0x0043e4d0 func layer_Load hand loads scroll layer .pln map into strip buffers, creates DirectDraw surface for tiles
+0x0043e8f5 func layer_Free hand frees layer strip buffer and releases its DirectDraw surface, clears height
+0x0043e986 func layer_ShiftStrips hand swaps/reloads 1024-wide strip buffers when scroll crosses a boundary, reading via 0046aea4
+0x0043ebbe func layer_Draw hand draws scroll layer: updates strips, scroll columns, blits via 004376f0
+0x0043ee93 func layer_LockSurface hand locks layer DirectDraw surface (vtable+0x64), restores if lost, stores pitch and pointer
+0x0043ef46 func layer_CopyColumn hand copies one 16-pixel column of tile data into locked layer surface
+0x0043f038 func layer_RefillAll hand resets scroll offset and refills all 40 columns of the layer surface
+0x0043f0c3 func layer_ScrollColumns hand scrolls layer surface by whole columns, filling new columns via layer_CopyColumn
+0x0043f260 func stage15_RegisterObjects hand registers stage 15 object type callbacks via 0040d919 and sets loader 0043f485
+0x0043f485 func stage15_Load hand stage 15 loader: loads stage15 map, packs and layers
+0x0043f67b func stage15_InitCamera hand stage 15 setup: camera and layer parameters after load
+0x0043f711 func stage15_RunFrame hand stage 15 per-frame logic: scroll camera, spawn enemies, trigger events
+0x0043fd60 func stage_InitStageData hand helper, uncertain role; calls (was misc_0043fd60)
+0x0043fe80 func gfx_ScaleBlit hand helper, uncertain role; calls (was misc_0043fe80)
+0x0044022c func draw_scanline hand helper, uncertain role; calls (was misc_0044022c)
+0x0044056d func misc_ScanlineDraw hand helper, uncertain role; calls (was misc_0044056d)
+0x00440910 func misc_ScanLine hand helper, uncertain role; calls (was misc_00440910)
+0x00440b7f func gfx_RotateScaleBlit hand helper, uncertain role; calls 409a98 409adc (was misc_00440b7f)
+0x00441000 func layer2_Load hand loads second-kind scroll layer map into strip buffers, creates DirectDraw surface
+0x004413d9 func layer2_Free hand frees layer2 strip buffer and releases its surface via layer_Free
+0x00441439 func layer2_ShiftStrips hand swaps/reloads layer2 strip buffers on scroll boundary via 0046aea4
+0x00441671 func layer2_Draw hand draws layer2: updates strips and blits via layer_Draw 0043ebbe
+0x00441a69 func layer2_Release hand releases layer2 resources by calling 004413d9
+0x00441ab0 func pal_LoadPalette hand helper, uncertain role; calls 421cbd (was misc_00441ab0)
+0x00441ade func pal_LoadAndBuildColorTables hand helper, uncertain role; calls 421cbd (was misc_00441ade)
+0x00441b0d func game_ClearBuffers hand helper, uncertain role; calls 44217e (was misc_00441b0d)
+0x00441b60 func gfx_LoadPalette hand helper, uncertain role; calls 441ade (was misc_00441b60)
+0x00441d9c func pal_ScalePalette hand helper, uncertain role; calls 441b60 (was misc_00441d9c)
+0x00441e79 func stub_00441e79 hand returns immediately, empty handler
+0x00441e84 func pal_SetHardwarePalette hand helper, uncertain role; calls (was misc_00441e84)
+0x00441edb func DWARF_SoundWriteBytes hand helper, uncertain role; calls (was misc_00441edb)
+0x00441f32 func gfx_UpdatePalette hand helper, uncertain role; calls 437c48 441e84 (was misc_00441f32)
+0x0044217e func misc_SelectPaletteTable hand helper, uncertain role; calls (was misc_0044217e)
+0x004421e8 func hud_SetDwarfColorMode hand helper, uncertain role; calls 44217e (was misc_004421e8)
+0x004425f3 func gfx_SetPaletteMode hand helper, uncertain role; calls 44217e (was misc_004425f3)
+0x00442a5b func pal_LoadPalette_2 hand helper, uncertain role; calls 441d9c 442c27 442ca9 (was misc_00442a5b)
+0x00442b5c func misc_InitDirectDraw hand helper, uncertain role; calls 44217e (was misc_00442b5c)
+0x00442b76 func stub_00442b76 hand returns immediately, empty handler
+0x00442b81 func gfx_GetSystemPalette hand helper, uncertain role; calls (was misc_00442b81)
+0x00442c27 func misc_SetFadeState hand helper, uncertain role; calls (was misc_00442c27)
+0x00442c4f func misc_WaitForInput hand helper, uncertain role; calls 401316 442c27 (was misc_00442c4f)
+0x00442c82 func game_SetExitState hand helper, uncertain role; calls (was misc_00442c82)
+0x00442ca9 func menu_WaitForInputRelease hand helper, uncertain role; calls 401316 442c82 (was misc_00442ca9)
+0x00442cdc func misc_UpdateColorFade hand helper, uncertain role; calls 44217e (was misc_00442cdc)
+0x00442e90 func obj12_Init hand object init: sets sprite anim table via 0040a60c, state and bounds
+0x0044302c func obj12_UpdateAI hand per-frame enemy or boss update: state machine, movement, attacks via 00409cb3
+0x004437aa func obj12_TouchStub hand provisional small touch callback forwarding to overlap helper 40c0e6
+0x004437e1 func obj12_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x00443972 func obj12_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x004439d1 func obj_Splash_Init hand object init: sets sprite anim table via 0040a60c, state and bounds (was obj13_Init)
+0x00443b2f func obj13_Update hand per-frame object update: moves and advances animation via 00409cb3
+0x00443dd9 func obj13_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x0044402e func obj13_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x0044409c func obj14_Init hand object init: sets sprite anim table via 0040a60c, state and bounds
+0x00444239 func obj14_UpdateAI hand per-frame enemy or boss update: state machine, movement, attacks via 00409cb3
+0x00444d8c func obj14_OnHitOrTouch hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x00444ef4 func obj14_OnHitOrTouch_2 hand touch or hit handler: tests message DAT_004cfb80, reacts, updates state
+0x00445035 func obj14_Draw hand object draw callback: draws sprite via 0040a6f3 or 0040b651
+0x0044509a func obj_InitGeneric_2 hand object init: sets sprite anim table via 0040a60c, state and bounds (was obj15_Init)
+0x00445212 func mob1_Update hand per-frame update of vehicle-like object; applies velocity via obj_Move, timer then destroy FUN_004080b7
+0x00445339 func mob1_CheckCollision hand dwarf touch callback in certain states, forwards to generic collision handler FUN_0040c0e6 (was mob1_OnBump)
+0x004453a7 func mob1_OnHit hand damage callback; at zero hp spawns three type 0x31 effects, FUN_00455959, FUN_0045c424
+0x00445730 func mob1_Draw hand draws shadow sprite via FUN_0040a6f3, then health bar FUN_0040b651
+0x004457a5 func mob1_AttackBoxHit hand attack hitbox callback; sets damage 3 vs dwarf, calls target hit callback, sound FUN_0042af2f
+0x00445826 func mob2_Init hand init sprite FUN_0040a60c, anim table, default state, bounding box FUN_0040a073
+0x004458b6 func mob2_Update hand homes toward nearest dwarf FUN_00456a26, lunge state machine, destroy on state 3
+0x00445c94 func mob2_OnBump hand dwarf touch callback; grabs dwarf, copies position, clears velocity
+0x00445d7c func mob2_OnHit hand damage callback; sets hurt state, child dwarf state, runs animator FUN_00409cb3
+0x00445e19 func mob2_Draw hand draws shadow via FUN_0040a6f3 and health bar FUN_0040b651
+0x00445e7e func mob3_Init hand sets up enemy sprite, anim table, hitbox, hit points scaled by difficulty, FUN_0045a7e5
+0x00445fd8 func mob3_Update hand patrol AI; throws projectile type 0x56 on anim frame, plays sounds
+0x00446368 func mob3_OnBump hand provisional: forwards dwarf touch to generic collision handler FUN_0040c0e6
+0x0044639f func mob3_OnHit hand damage callback subtracting hit points FUN_0040b52a, hurt or death state, FUN_0045c424
+0x004464cc func mob3_Draw hand draws shadow FUN_0040a6f3 and health bar FUN_0040b651
+0x0044652b func mob4_Init hand sprite init FUN_0040a60c, anim table, default state, hitbox
+0x004465c7 func obj_UpdateFloat hand floating object drifts upward, timer changes state, destroy with sound (was mob4_Update)
+0x00446754 func mob4_OnHit hand damage callback; stops motion and picks hurt state by attacker type
+0x0044683a func mob4_OnBump hand dwarf touch; early states grab via FUN_0040c0e6 and sound, later generic collision
+0x00446926 func mob4_DrawShadow hand draws sprite shadow only via FUN_0040a6f3 (was mob4_Draw)
+0x00446974 func mob5_Init hand enemy init with sprite, child hitbox FUN_00407ed6, hit points scaled by difficulty
+0x00446b10 func mob5_Update hand main large enemy AI state machine; chases nearest dwarf, attack box FUN_00409b20, grab
+0x00447432 func mob5_OnBump hand provisional: forwards dwarf touch to generic collision FUN_0040c0e6
+0x00447469 func mob5_AttackBoxHit hand attack hitbox callback; damages dwarf, links itself as grabber, sets state
+0x004474df func mob5_OnHit hand damage callback; reduces hit points, death or hurt state, releases grabbed dwarf
+0x00447773 func mob5_Draw hand draws shadow FUN_0040a6f3, effect FUN_0040b00d during attack, health bar
+0x00447858 func mob6_Init hand init sprite pack, anim table, hit points 8, hitbox
+0x0044795f func mob6_Update hand waits until dwarf is near, rises, plays sound, destroys at final state
+0x00447b2e func mob6_OnBump hand dwarf touch; damages dwarf in some states else generic collision FUN_0040c0e6
+0x00447bcc func mob6_ApplyPenetration hand damage callback calls generic hit handler FUN_0040b996 for attacker type 1 (was mob6_OnHit)
+0x00447c1c func mob6_Draw hand draws shadow via FUN_0040a6f3 and health bar FUN_0040b651
+0x00447c7b func mob7_Init hand init flying object with initial velocity, child hitbox, 10 hit points, FUN_0045a7e5
+0x00447d96 func mob7_Update hand jumping enemy with gravity, attack box on frame 0, FUN_00409b20
+0x00447fd2 func box_CalcPenetrationChild_2 hand forwards dwarf touch to generic collision FUN_0040c0e6 (was mob7_OnBump)
+0x00448009 func mob7_OnDeath hand on death spawns four type 0x5a debris pieces, FUN_0045c424, destroys object (was mob7_OnHit)
+0x0044820c func mob7_Draw hand draws shadow via FUN_0040a6f3 and health bar FUN_0040b651
+0x00448270 func stage6_Register hand registers stage 6 run function and object type callbacks 5, 6, 8 via FUN_0040d919
+0x00448305 func stage6_Run hand stage 6 main loop; loads jarda06 data, bg06.pln, st06.pal, per-frame camera, objects, sound
+0x004484c2 func stage6_InitCamera hand initialises camera structure with memset, bounds, zoom, copies to previous-frame camera
+0x00448594 func stage6_SetupBackdrop hand projects screen corners FUN_0040a2a6 and builds backdrop quad FUN_004023b0
+0x00448665 func stage6_UpdateCamera hand follows lead dwarf, zoom smoothing, scroll clamping to bounds, sets view limits
+0x00448ad0 func dispdib_Open hand opens DISPDIB fullscreen: GetSystemMetrics, creates display window, ShowWindow
+0x00448b9f func dispdib_Hide hand hides DISPDIB window with ShowWindow 0, clears active flag, closes display
+0x00448bd4 func dispdib_Start hand creates DISPDIB window if missing and opens it, returns success bool
+0x00448c3b func dispdib_Present hand if DISPDIB window exists calls FUN_0046b05b to present frame
+0x00448c5d func dispdib_Close hand sends end message FUN_00448e40 and DestroyWindow on DISPDIB window
+0x00448c99 func vga_ClearFramebuffer hand zeroes 16000 dwords at 0xA0000 VGA memory
+0x00448cc0 func dispdib_SendModeMessage hand builds struct and SendMessageA 0x4a to display window to set DISPDIB mode
+0x00448d20 func dispdib_CreateWindow hand builds path, LoadModule DISPDIB.DLL, CreateWindowEx DisplayDibWindow fullscreen
+0x00448e40 func dispdib_SendEnd hand SendMessageA 0x402 to DISPDIB window to end display
+0x00448e60 func map_DrawScrolledTiles hand draws scrolling tile map rows into 8-bit buffer with transparent colour-0 copy
+0x004491e0 func stage10_Register hand registers stage 10 run function and object types 0x81, 0x82, 0x83 via FUN_0040d919
+0x0044926f func stage10_Run hand stage 10 main loop; loads ut data, bg10/fg10.pln, st10.pal, spawn waves, per-frame update
+0x00449517 func stage10_InitCamera hand initialises camera via memset, bounds, zoom, copies to previous-frame camera
+0x004495fb func stage10_SetupBackdrop hand projects screen corners FUN_0040a2a6, builds backdrop quads FUN_004023b0 and layers
+0x004496eb func stage10_UpdateCamera hand follows average dwarf position FUN_00456332 and lowest Y FUN_0045649e, clamps scroll
+0x00449b40 func stage10_SpawnWaves hand countdown timers spawn type 0x81 objects from table at random lanes
+0x00449dca func stub_00449dca hand empty stub only returns
+0x00449dd5 func stub_00449dd5 hand empty stub only returns
+0x00449de0 func mob8_Init hand init object with child hitbox FUN_00407ed6, attack callback FUN_0044a31c
+0x00449f59 func mob8_Update hand scans dwarves for nearest, on frame fires type 0x15 projectile at target
+0x0044a2ee func mob8_OnBump hand provisional: forwards dwarf touch to generic collision FUN_0040c0e6
+0x0044a31c func mob8_AttackBoxHit hand attack hitbox callback; sets damage 3, calls victim hit callback
+0x0044a375 func mob8_OnHit hand damage callback; switches to hurt state and silences child hitboxes
+0x0044a407 func mob8_DrawSprite hand draws sprite shadow via FUN_0040a6f3 (was mob8_Draw)
+0x0044a455 func mob9_Init hand init projectile sprite, small hitbox, expands child hitbox
+0x0044a593 func mob9_Update hand projectile moves with gravity, destroyed in final state, motion via FUN_004087f3
+0x0044a61c func mob9_OnHit hand damage callback; bounces object, reverses or halves X speed, plays sound
+0x0044a752 func mob9_OnBump hand if dwarf in state 0 sets damage 2 and calls target hit callback
+0x0044a7b1 func mob9_Draw hand draws sprite shadow via FUN_0040a6f3
+0x0044a7ff func mob10_Init hand init enemy anim table, hitbox, child sub-object, special case for stage 4
+0x0044a907 func mob10_Update hand nine-state machine with gravity; attack boxes FUN_00409b20, knock-back, sound
+0x0044abbf func mob10_OnHit hand damage callback switch on attacker type selects hurt, death or knock states
+0x0044adc8 func mob10_Draw hand draws sprite shadow via FUN_0040a6f3
+0x0044ae16 func mob10_OnBump hand forwards dwarf touch to generic collision FUN_0040c0e6
+0x0044ae44 func mob10_AttackBoxHit hand attack hitbox callback; reverses attacker X speed, damage 8, calls victim hit callback
+0x0044aeb0 func snd_InitDirectSound hand LoadLibrary dsound.dll, GetProcAddress DirectSoundCreate, creates device, sets cooperative level
+0x0044af87 func snd_PlayOnce hand IDirectSoundBuffer Stop, SetCurrentPosition 0, Play without looping on buffer index
+0x0044afcf func snd_Stop hand IDirectSoundBuffer Stop on buffer index
+0x0044aff7 func snd_PlayLooped hand IDirectSoundBuffer Stop, SetCurrentPosition 0, Play with DSBPLAY_LOOPING
+0x0044b03f func snd_ReleaseBuffer hand releases buffer by index, or all-ones index releases DirectSound object and FreeLibrary
+0x0044b0db func snd_LoadWav hand mmio opens WAVE file, reads fmt and data chunks, creates DirectSound buffer, copies data; MessageBox errors
+0x0044b40f func snd_LoadOrFreeAll hand param 0 frees all buffers; else init DirectSound and loads each flagged wave
+0x0044b4de func snd_ClearBufferTable hand zeroes 50 sound buffer pointers
+0x0044b520 func dwarf_Init_4b520 hand initialises dwarf object from player slot, sprite, anim, roster arrays, hitbox, shadow child
+0x0044b807 func dwarf_Update_4b807 hand huge player state machine: input, walk, jump, attacks, weapons, dwarf switching, projectiles
+0x0045441a func dwarf_Draw_5441a hand draws dwarf shadow via FUN_0040a6f3 unless in certain states, then health bar FUN_0040b651
+0x004544f8 func dwarf_OnHit hand damage callback; per attacker type picks hurt, knockdown or death state, reduces roster hp
+0x004558ad func dwarf_OnBump hand forwards enemy touch to generic collision handler FUN_0040c0e6
+0x004558e4 func dwarf_SaveMoveDeltas hand for three dwarves stores X and Z movement since last frame into delta arrays
+0x00455959 func dwarf_Deactivate hand sets update callback to null stub FUN_00407810, silences children, releases held enemy
+0x00455a77 func dwarf_Activate hand sets update FUN_0044b807 and draw FUN_0045441a, sets state and facing, runs animator
+0x00455aeb func dwarf_IsStateGroupA hand returns true for special animation state group A
+0x00455b5b func dwarf_IsStateGroupB hand returns true for special animation state group B
+0x00455bca func dwarf_IsStateGroupC hand returns true for state group C including special animation states
+0x00455c69 func dwarf_IsStateGroupD hand returns true for state group D including special animation states
+0x00455d08 func dwarf_IsCaptureState hand returns true when dwarf state is in captured set
+0x00455d5b func dwarf_UpdateSwitchFlags hand counts down switch cooldown and sets dwarf active flags and child visibility
+0x00455eb6 func hud_UpdateDwarfIcons hand computes per-dwarf ready flags and calls FUN_004421e8 to update roster HUD
+0x00456003 func dwarf_AddCameraMarkers hand for each active dwarf calls FUN_0040d72c type 0xc with position
+0x004560e6 func dwarf_UpdateRunInput hand double-tap left or right detection, sets run direction and timer
+0x004561a9 func dwarf_IsInSpecialState hand returns true if current dwarf state is in special state set
+0x00456257 func dwarf_IsUnavailable hand true if dwarf deactivated (update is null stub) or in down or dead state set
+0x00456332 func camera_GetTargetX hand average X of active dwarves plus facing-based lead offset, smoothed
+0x0045649e func camera_GetTargetY hand lowest Y of active dwarves, or camera Y when lock flag set
+0x00456544 func camera_GetAverageZ hand average Z depth of active dwarves
+0x004565d2 func dwarf_SwitchActive hand hands control slot to next available dwarf, updates roster mask and camera leader
+0x004568d1 func dwarf_GetLeader hand returns first live non-deactivated dwarf among three roster slots
+0x00456952 func dwarf_GetThirdDwarf hand given two dwarf objects returns the remaining third dwarf by index
+0x00456a26 func dwarf_FindNearest hand returns nearest available dwarf to current object by summed absolute distance
+0x00456b0c func obj_FindTargetInBox hand builds box around current object, FUN_00408999 queries objects, returns hit
+0x00456c31 func dwarf_PushBackIntoView hand when dwarf nears screen edge teleports others to edge, sound, FUN_00455a77, FUN_004087f3
+0x00456ea6 func dwarf_BeginHitReaction hand sets hit dx/dy in DAT_004cfb82/80, calls actor hook +0x40, FUN_0042af2f sound, state-dependent
+0x00456fd8 func dwarf_BeginKnockback hand sets DAT_004cfb82=0x42, calls hook +0x40, plays sound via FUN_0042af2f, copies state 0x48 to 0xbe
+0x0045708d func stub_0045708d hand empty stub, only returns
+0x00457098 func dwarf_DampAirVelocity hand when airborne (flag 0x20 clear) sets next state 0x107 and quarters x and z velocity
+0x0045711c func dwarf_ApplyPadAirControl hand adds pad-direction acceleration 0x1800 to vx and vz of current actor DAT_004cfb70, clamped to 0x30000
+0x0045720c func dwarf_StopMovement hand zeroes current actor velocity x/z and move counters, clears DAT_004be032 and DAT_004be048
+0x00457265 func dwarf_UpdateJumpRising hand per-character jump state, height thresholds by dwarf id, spawns FUN_00407bc4 effect, handles landing states
+0x00457845 func dwarf_UpdateJumpLanding hand per-character height limit, falling/landing logic, calls FUN_0045720c and FUN_00457ad9
+0x00457ad9 func dwarf_ClearJumpCounters hand clears jump counters at +0xfc/+0xfd and DAT_004be032, DAT_004be048
+0x00457b1c func dwarf_UpdateJumpRisingMoving hand jump update with horizontal air control FUN_0045711c, spawns FUN_00407bc4 effect, per-character heights
+0x004580d0 func dwarf_UpdateJumpFallMoving hand falling jump update with air control, landing state selection by dwarf id
+0x00458309 func dwarf_ChooseActionFromInput hand large input handler: pad buttons choose next state, tag switch and team specials, shared hit points DAT_004c03c4
+0x0045907b func debris_Init hand initializes bouncing object sprite pack DAT_004afee0, anim 0x34, hitbox via FUN_0040a073, zero velocity
+0x004591a4 func debris_Update hand gravity and bounce, wall clamp, FUN_0041f9d8 move, destroy via FUN_004080b7 after 120 frames
+0x004593da func debris_OnWallHit hand reflects velocity of object owner against wall, plays sound FUN_0042af2f, sets state 2
+0x0045951a func debris_OnCollide hand collision response, pushes object out of hit rect, damps velocities by contact side flags
+0x00459942 func debris_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x00459987 func ball_Init hand initializes object sprite pack DAT_004aff40, anim 0x5b, hitbox 24 wide, zero velocity
+0x00459aaa func ball_Update hand rolling or flying object, gravity, spin frame by vx, ground bounce, destroyed after 150 frames
+0x00459e77 func ball_OnHitActor hand bounce off hit actor, reflect velocity, plays sound FUN_0042af2f, hook +0x40
+0x0045a07c func ball_OnWallHit hand wall and floor contact handler setting side flags, reversing velocity, FUN_004087f3 push-out
+0x0045a2fc func ball_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x0045a341 func ball_AimAtNearestEnemy hand scans enemy list DAT_004d4bc0 for nearest target in front, sorts into DAT_004be090, sets projectile velocity toward it
+0x0045a686 func ball_OnHitByAttack hand when struck by owner type 7, plays sound, aims via FUN_0045a341, sets state 1 and recenters position
+0x0045a752 func game_AdjustCounterClamped hand adds param to DAT_004c3a74, clamps to 0x14 maximum and resets to 0x14 if below one
+0x0045a7aa func evtq_Reset hand clears event queue count DAT_004c38a0 and snapshot count DAT_004c9b00 plus stats fields
+0x0045a7e5 func evtq_Push hand appends 8-byte event (id, value) to queue at DAT_004c38a4 if fewer than 16 entries
+0x0045a83c func stats_IncCounter hand increments 16-bit counter at DAT_004c3924 indexed by param
+0x0045a852 func evtq_Snapshot hand copies 0x23 dwords from queue DAT_004c38a0 to DAT_004c9b00 then clears queue count
+0x0045a877 func stub_0045a877 hand empty stub, only returns
+0x0045a882 func dwarf_UpdateFollowerAI hand per-frame AI for non-leader dwarves: computes follow offset by dwarf pair tables, synthesizes pad bits DAT_004be062/5e, large state switch
+0x0045af15 func particleA_Init hand init small object anim table DAT_004b6778, hitbox 8, state 0x100, calls FUN_00409cb3
+0x0045afb7 func particleA_Update hand gravity, FUN_00409cb3 anim, destroyed after 80 frames or on landing, FUN_0041f9d8 move
+0x0045b05f func particleA_OnGround hand FUN_0040ba77 collision then bounce vertical velocity halved on ground contact
+0x0045b0c4 func particleA_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x0045b112 func game_CheckAllDwarvesDown hand by game mode DAT_004c9b98 checks FUN_00456257 downed status of three dwarves, revives one or triggers FUN_0041d8ad game over
+0x0045b35c func hud_InitLifeIcon hand initializes HUD life icon sprite DAT_004bdfe0 with anim table DAT_004b0840 and defaults
+0x0045b3b4 func hud_DrawLifeIcons hand draws one animated icon per shared hit point DAT_004c03c4 using FUN_0040a6f3, spacing 0x14, dimming lost ones
+0x0045b5ed func game_LoseHitPoint hand decrements shared hit points or lives by mode DAT_004afeb0, on zero calls FUN_0041d8ad and sets dwarves to dying state 0x11b
+0x0045b788 func game_GainHitPoint hand increments shared hit points DAT_004c03c4 or lives DAT_004c1470, capped at 7 in mode 2
+0x0045b7df func particleB_Init hand init object anim table DAT_004b6788, hitbox 0x18 wide, state 0x100, FUN_00409cb3
+0x0045b875 func particleB_Update hand moves object, state 5 pushes forward, destroyed in state 1, FUN_00409cb3 anim
+0x0045b935 func particleB_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x0045b983 func debrisB_Init hand init object anim table DAT_004b67c8, hitbox 20 wide, lifespan 200 frames, state 0x104
+0x0045ba8b func debrisB_Update hand lifespan countdown, FUN_004087f3 moves, picks facing state from velocity angle, gravity, destroys at timeout
+0x0045bc80 func debrisB_OnWallHit hand on contact FUN_0040b996 response and sets lifespan counter to expire
+0x0045bcdc func debrisB_OnHitDwarf hand plays sound FUN_0042af2f, applies hit reaction codes by owner state 2 or 3, expires
+0x0045bdd6 func debrisB_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x0045be24 func prop_InitFromSpawnTable hand init prop anim table DAT_004b6808, reads type 0..3 from spawn stream DAT_004cfba8, sets state and hitbox
+0x0045bf9d func prop_Update hand copies prev hitbox, FUN_00409cb3 anim step, destroys object via FUN_004080b7 when state is 2
+0x0045bffe func prop_OnHit hand calls common hit handler FUN_0043a13c with attacker DAT_004d4bb8 and prop DAT_004cfb70
+0x0045c02c func prop_OnHitSpawnItem hand on hit by dwarf picks another dwarf via FUN_00455c69, throws it or spawns item type 0x30 with FUN_00407bc4
+0x0045c3d6 func prop_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x0045c424 func prop_SpawnDropByFlags hand spawns item type 0x30 via FUN_00407bc4 chosen by flags 0x300 and random FUN_00475753 unless dwarf is in states 0xe or 0x2b
+0x0045c629 func pickup_Init hand init pickup anim table DAT_004b6850, reads variant 0..3 from spawn stream, hitbox 24 wide, FUN_0041f7e5 floor lookup
+0x0045c79b func pickup_Update hand gravity, falling and floating state machine, on states 2/3 calls owner hook +0x40 and destroys, timeout counter 300
+0x0045ca2f func pickup_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x0045ca7d func pickup_OnCollect hand dwarf touches pickup, plays sound, adds shared hit points via FUN_0045b788 or +3, sets collected state
+0x0045cc14 func fallingProp_Init hand init object anim table DAT_004b6890, state from spawn stream, creates linked child FUN_00407ed6 shadow, hitbox 32 wide
+0x0045cd1b func fallingProp_Update hand gravity, bounces on floor limit -0x28 spawning type 0x31 effect, 180-frame timeout then FUN_004080b7
+0x0045cf2d func fallingProp_OnHit hand wall collision FUN_0040ba77, on ground hit by type 4 spawns type 0x31 effect and halves vertical speed
+0x0045d052 func fallingProp_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x0045d0a0 func decor_Init hand init static object anim table DAT_004b6970, hitbox 40 wide, state 0x100, FUN_00409cb3
+0x0045d152 func decor_Update hand copies prev hitbox, anim step FUN_00409cb3, destroys object in state 1
+0x0045d1ae func decor_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x0045d1fc func dwarf_DampAirVelocity_2 hand duplicate of 0x00457098, airborne damps x/z velocity and sets state 0x107
+0x0045d280 func dwarf_ClearJumpCounters_2 hand clears jump counters at +0xfc/+0xfd and DAT_004be032, DAT_004be048
+0x0045d2bb func dwarf_UpdateHighJumpRising hand per-dwarf height limits, sets upward speed from horizontal speed, sound 0x11 on landing, FUN_00475753 not used
+0x0045d5fa func dwarf_UpdateHighJumpFalling hand falling part of high jump with per-dwarf heights, landing sound FUN_0042af2f(1,1,0x11)
+0x0045d7f0 func dwarf_UpdateDyingFall hand falling when knocked out, on landing sets state 0x11b, plays sound and calls FUN_0045b112 team check
+0x0045d9ae func dwarf_UpdateJumpAttackFall hand jump with weapon projectile spawn FUN_00407bc4(7), per-dwarf heights, landing state selection
+0x0045de70 func stage1_RegisterObjectTypes hand sets stage callback table entry to FUN_0045e0be, picks DAT_004b6e50 or DAT_004b4e88, registers object types via FUN_0040d919
+0x0045e0be func stage1_RunStage hand loads stage1 planes csbg01 csfg01u bg01 fg01 pln, jarda, csator, st01 pal, then main loop updating objects, camera, until exit flag
+0x0045e2d3 func stage1_DrawBackgroundLayers hand positions stage1 parallax planes 0..3 and sprite layers from camera x,y with FUN_004021cb and FUN_00402267
+0x0045e414 func camera_Update_5e414 hand scrolls camera towards dwarf target with clamp 0x80000, bounds flags, zoom, fills screen-edge globals via FUN_0040a388
+0x0045eaf5 func camera_Init_5eaf5 hand memset camera struct DAT_004ce720 0x48 bytes, sets default bounds 0xf000 to 0x7fff, zoom, viewport constants
+0x0045ec2c func stub_0045ec2c hand empty function that only returns
+0x0045ec40 func enemyA_Init hand init enemy anim table DAT_004b6cc8, hitbox, hit points from difficulty DAT_004c9ad4 plus 0x2a, FUN_0045a7e5
+0x0045ede1 func enemyA_Update hand AI state machine 0..8 chasing dwarf, spawning projectile type 0x78 0x79 0x7a on animation frames, spawns drop and 0x7b on death
+0x0045fcb8 func enemyA_OnHit hand hit by dwarf attack, subtracts damage from hit points, picks hurt 0x104 or death 0x105 anim, plays sound FUN_0042af2f
+0x0045ffa6 func enemyA_OnCollide hand calls common collision helper FUN_0040c0e6 with other object and current object
+0x0045ffdd func enemyA_Draw hand draws object sprite with FUN_0040a6f3 at position high words then FUN_0040b651 hitbox
+0x0046003c func enemyB_Init hand init object anim table DAT_004b6d10, hitbox 16 wide, state 0, zero velocity
+0x00460103 func enemyB_Update hand homing mover, spawns trail type 0x31 every 4 frames, steers toward dwarf with clamped speeds, 1000-frame timeout
+0x004604e5 func enemyB_OnHitActor hand on touching target sets damage 3 and flag 2, calls owner hook +0x40, sets target to hurt state 0x101
+0x0046055a func enemyB_OnCollide hand wall collision FUN_0040b996, on actor hit stops movement and enters state 0x101
+0x0046060f func enemyB_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x0046065d func enemyC_Init hand init anim table DAT_004b6d28, creates linked child FUN_00407ed6 hitbox owner, hitbox 16 wide
+0x00460755 func enemyC_Update hand child hitbox via FUN_00409b20, plays sound 0xd when hit, state 1 uses larger hitbox, destroys at state 2
+0x004608b8 func enemyC_OnCollide hand wall collision FUN_0040b996 when collision mode is 1
+0x00460908 func enemyC_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x00460956 func enemyD_Init hand init anim table DAT_004b6d40, linked child hitbox owner, offset 0x92 cleared, hitbox 16 wide
+0x00460a5a func enemyD_Update hand state 1 rises with large child hitbox 0x3c wide via FUN_00409b20 callback 0x460d57, destroys at state 2
+0x00460b9c func enemyD_OnCollide hand wall and floor bounce with halved velocity, plays sound 0xc, lands into state 0x101
+0x00460d09 func enemyD_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x00460d57 func enemyD_OnHitDwarf hand plays sound 0xe, sets damage 6 and flag 2, calls owner hook +0x40
+0x00460dae func enemyE_Init hand init anim table DAT_004b6d58, hit points from difficulty DAT_004c9ad4, child hitbox owner, FUN_0045a7e5
+0x00460f84 func enemyE_BobVertical hand oscillates vertical speed by 0x100 per frame between plus and minus 0x4000, hover bobbing
+0x00461011 func enemyE_Update hand hovering enemy state machine 0..0xc, bobbing, spawns shot type 0x7c, random drift via FUN_00475753, teleport in state 7
+0x0046183b func enemyE_OnHit hand wall bounce, dwarf hit subtracts damage from hit points, hurt 0x106 or knockdown 0x101, stops sound FUN_0042b03a
+0x00461b11 func enemyE_OnCollide hand calls common collision helper FUN_0040c0e6 with other object and current object
+0x00461b48 func enemyE_Draw hand draws sprite, in state 5 blinks glow frame 0x15/0x17 and projects shadow points via FUN_0040a2a6, then hitbox FUN_0040b651
+0x00461d29 func enemyF_Init hand init anim table DAT_004b6dc0, constant vertical speed 0xffff8000, child hitbox owner, hitbox 16 wide
+0x00461e1f func enemyF_Update hand patrol timer 50 frames, reverses x speed and cycles anim 0x100 0x104 0x105 0x101, child hitbox, destroys in state 3
+0x0046205c func enemyF_OnHitActor hand sets damage 3 flag 2, calls owner hook +0x40, puts hit target into state 0x102 and stops it
+0x00462104 func enemyF_OnCollide hand wall collision FUN_0040b996, state 0x102 on wall from dwarf, reverses x speed on side hit
+0x00462239 func enemyF_Draw hand draws object sprite with FUN_0040a6f3 at position high words of x,y,z
+0x00462290 func gfx_BlitSpriteScaled hand column-major RLE 8-bit sprite scaled blit to frame buffer DAT_004bd588, skips zero pixels, unrolled 4 pixels
+0x00462626 func gfx_BlitSpriteScaledFlipped hand same as column RLE scaled blit but horizontally mirrored, steps source backwards
+0x004629be func gfx_BlitSprite4bitScaled hand 4-bit nibble packed RLE sprite scaled blit, ORs palette bank from header byte, skips index zero
+0x00462e0d func gfx_BlitSprite4bitScaledFlipped hand mirrored version of the 4-bit nibble scaled sprite blit with palette bank OR
+0x00463258 func stub_00463258 hand empty function that only returns
+0x00463263 func gfx_BlitShadow4bitScaled hand scaled 4-bit sprite used as mask, remaps covered frame buffer pixels through darkening table DAT_004c1650
+0x004634cf func stub_004634cf hand empty function that only returns
+0x004634da func stub_004634da hand empty function that only returns
+0x004634e5 func gfx_ShadeTrapezoid hand per-scanline span shading, remaps frame buffer bytes through table DAT_004c1650 between interpolated left and right edges
+0x0046364d func gfx_DrawSpriteSpanOutline hand draws vertical sprite silhouette as spans via FUN_0046be3b with optional flip and perspective scaling
+0x0046382e func gfx_FillRectColor hand memset fill of rectangle rows in frame buffer with colour byte at +0x3a, clipped to height DAT_004bd730
+0x004638e5 func gfx_BlitSpriteNearestScaled hand nearest-neighbour scaled blit of palettised bitmap to frame buffer with clipping, skips zero pixels
+0x00463af0 func sfx_LoadSoundSlot hand finds free slot in DAT_004bdcd0, maps sound id to slot in DAT_004bdbb0, loads wave via FUN_0044b0db
+0x00463b84 func sfx_FreeAllSounds hand frees all 0x32 loaded sound slots via FUN_0044b03f and clears id map of 0x100 entries
+0x00463c13 func sfx_PlaySound hand plays loaded sound by id when sound enabled, FUN_0044af87 on mapped slot
+0x00463c8e func sfx_StopSound hand stops loaded sound by id when sound enabled, FUN_0044aff7 on mapped slot
+0x00463d09 func sfx_StopSoundLooped hand plays loaded sound slot by id via FUN_0044afcf when sound enabled (was sfx_PlaySoundLooped)
+0x00463d84 func sfx_SetMasterState hand forwards state to FUN_0044b40f when sound or music enabled
+0x00463db5 func audio_AdjustPauseCount hand nested pause counter DAT_004b6df8, on first pause pauses sfx and CD track, on release resumes
+0x00463e7b func cdaudio_Open hand MCI open of cdaudio device, set time format to tracks, retries with message box on failure
+0x00464056 func cdaudio_Stop hand mciSendCommand 0x808 stop on CD audio device if open
+0x004640ae func cdaudio_Close hand mciSendCommand seek to start then close CD audio device, clears open flag
+0x0046412b func cdaudio_PlayTrack hand MCI play CD track, special values 0 pause, 1 stop, 0xfffffffe open, 0xffffffff replay, uses timeGetTime loop timer
+0x004643f0 func joy_CheckConnected hand probes joyGetPos on joystick 1 or 0 and downgrades controller type DAT_004bd5c0 if absent, then FUN_0046a5b2
+0x00464468 func config_LoadControls hand reads Keyboard, JoyButtons strings and ControllType from Dwarves.ini section Dwarves for Win
+0x004644eb func ini_WriteInt hand converts int with _itoa and calls WritePrivateProfileStringA for given section, key, file
+0x00464524 func config_SaveControls hand writes Keyboard, JoyButtons and ControllType to Dwarves.ini, then rechecks joystick
+0x00464587 func app_WinMain hand single-instance check via atom FUTOKbyMoZo2, registers class, creates window, loads ini, runs message loop and idle FUN_00469643
+0x0046485f func win_RegisterClass hand loads accelerators, registers window class DwarfWClass with FUN_0046601a as WndProc
+0x004648eb func win_CreateWindowAndFindCD hand creates Three Dirty Dwarves window, reads MainPath and CDPath from ini, scans drives for COMMON TDDLOW.PWH, loads music setting
+0x00464d7b func game_CallIfEnabled hand calls FUN_0040119c with argument only when flag DAT_004b77d4 is set
+0x00464da4 func input_ReadJoystick hand joyGetPos for pad 0 and optional pad 1, maps axes and buttons into input bitmask DAT_004bd688
+0x00465145 func input_ReadKeyboard hand GetKeyState on arrows and configured Keyboard letters, builds input bitmask DAT_004bd688
+0x004656c7 func win_PaintBackdrop hand WM_PAINT drawing: loads splash resource 0x5b via SetDIBitsToDevice, else StretchDIBits of palettised screen bitmap with realized palette
+0x00465ab0 func joy_CountDevices hand probes joyGetPos on ids 0,1,2 and returns 1 plus the number of connected joysticks
+0x00465b12 func input_AssignPlayerDevice hand assigns input device to player slot 1..3 in DAT_004b77c4/c8/cc, swapping with the player that had it
+0x00465c38 func menu_UpdateControllerItems hand clamps controller count, checks and enables menu items 300,0xc0,0xc1 and per-player device items 0x12d to 0x13a
+0x0046601a func win_WndProc hand main window procedure: keys, menu commands, cheat string DWARVES TEAM, music toggle, palette, mouse menu, close
+0x00468524 func win_MainWndProcHook hand Window proc wrapper: WM_ACTIVATEAPP handling, minimize on deactivate, quit on close, forwards to DAT_004be390
+0x00468705 func dlg_AboutProc hand Dialog proc: WM_INITDIALOG, OK/Cancel EndDialog, double-click sets flag
+0x004687da func pad_FindKeyIndex hand Searches 8-entry key map DAT_004bd5b0 for a byte, returns index+1
+0x0046882f func pad_GetButtonLabel hand Builds label text for control dialog item: key char or "Button N" using joyGetDevCapsA
+0x00468b10 func dlg_UpdateButtonLabels hand Sets text of 8 control-config dialog buttons 0x424-0x42b via pad_GetButtonLabel
+0x00468c7e func dlg_InitControlsPage hand Loads input config, checks device radio buttons 0x40e-0x411, refreshes labels
+0x00468d23 func pad_RemapButton hand Rebinds one of 8 action keys/joystick buttons in key map tables DAT_004bd590/b0
+0x00468ee4 func dlg_ReconfigButtonProc hand Dialog proc: waits via timer for key (GetKeyState) or joyGetPos button, then remaps and ends
+0x0046938f func dlg_ControlsProc hand Controls config dialog proc: device radios, joyGetPos checks, defaults ZXCASDQE, launches reconfig dialog
+0x00469643 func game_RunSession hand Sets display mode, allocs buffer, setjmp, runs game main loop, then restores window, cursor, menu on exit
+0x00469ef5 func game_Cleanup hand Restores system params, destroys cursor, menu, GDI objects and frees resource on exit
+0x00469fa1 func game_FrameLoop hand Per-frame loop: timeGetTime pacing, PeekMessage pump, vblank wait, longjmp on quit, renders frame
+0x0046a32b func time_MeasureVBlank hand Measures VGA vertical retrace period by polling port 0x3da within 100 ms
+0x0046a3b3 func pal_CreateFromDib hand Builds 256-entry LOGPALETTE from DIB color table (BGR to RGB) with CreatePalette
+0x0046a492 func win_SetTitleWindowed hand SetWindowTextA on main window only when not fullscreen
+0x0046a4c7 func game_ResumeDisplay hand Frees resource and palette, redraws window, resets frame timers and counters, restores cursor
+0x0046a5b2 func pad_InitJoystickRanges hand joyGetDevCapsA dead-zone thresholds for pads, builds key to button mask table
+0x0046a9be func cd_IsCdromDrive hand Sets drive letter string, GetDriveTypeA equals DRIVE_CDROM
+0x0046aa02 func win_SetTitle hand SetWindowTextA on main window
+0x0046aa1d func cfg_SavePassword hand Writes Password to Dwarves.ini section Dwarves for Win
+0x0046aa75 func menu_RebuildStageMenu hand Rebuilds stage menu items from unlocked level count, updates GameMode check marks, saves GameMode in ini
+0x0046ac83 func menu_UnlockNextStage hand Raises unlocked stage if reached, saves password, rebuilds stage menu
+0x0046acfe func menu_CheckStageItem hand Sets current stage and checks matching menu item 0xfa+n, unchecks others
+0x0046ad80 func menu_RemoveStageItems hand RemoveMenu for 16 stage items ids 0xfa..0x109
+0x0046adca func pad_IsKeyDown hand GetKeyState high bit test returning 1 if pressed
+0x0046ae01 func lz_OpenFile_6ae01 hand chdir to game dir and LZOpenFileA, error handler on failure
+0x0046ae90 func lz_Close hand LZClose wrapper
+0x0046aea4 func lz_Read hand LZRead wrapper with error handler
+0x0046aeef func lz_Seek hand LZSeek wrapper with error handler
+0x0046af30 func gfx_PresentBackbuffer hand Copies 320x224 backbuffer to screen surface, with 1x/2x pixel doubling variants
+0x0046b05b func gfx_BlitToVgaMemory hand Copies backbuffer rows to VGA memory at 0xa0000 for 56 rows
+0x0046b0a4 func gfx_BlitSpriteClipped hand Clipped sprite blit to 320-wide backbuffer, skipping transparent zero or low-nibble bytes four at a time
+0x0046b23b func gfx_ScrollTileRows hand Overlapping dword memmove of tile map rows (0x28 entries per row) for scroll
+0x0046b2a0 func gfx_CopyRect hand Copies rows of bytes between buffers with source and dest strides
+0x0046b2e2 func gfx_FlipBufferVertical hand Swaps rows top-to-bottom in a buffer dwords at a time (vertical flip)
+0x0046b330 func stage_RegisterHandlers hand Registers stage14 loop callback and calls FUN_0040d919 to install object type handler sets ids 0x6d-0x9b
+0x0046b4d1 func stage14_RunLoop hand Loads stage14 fg/bg pln maps and pal, runs per-frame update loop until done flag
+0x0046b66f func stub_0046b66f hand Empty function returning immediately
+0x0046b67a func stub_0046b67a hand Empty function returning immediately
+0x0046b685 func cam_InitDefaults_6b685 hand Zeros camera struct DAT_004ce720, sets scroll bounds and limits, saves copy at 004ce770
+0x0046b768 func bg_PositionLayers hand Calls FUN_004021cb for two background layers with scroll offsets and FUN_004020d6
+0x0046b7d6 func cam_UpdateScroll hand Camera follows player with clamped smoothing, applies scroll limits flags, computes screen edge bounds
+0x0046bc20 func gfx_PointInBounds hand Returns 1 if x,y lies within screen buffer width and height
+0x0046bc72 func gfx_DrawLine hand Bresenham line into 8-bit screen buffer with bounds check per pixel
+0x0046be3b func gfx_RemapSpanColors hand Remaps a horizontal span of pixels through palette lookup table DAT_004c3750, dword at a time
+0x0046c023 func gfx_FillSpan hand Clipped horizontal span fill using memset on screen buffer
+0x0046c100 func stub_0046c100 hand Empty function returning immediately
+0x0046c10b func stub_0046c10b hand Empty function returning immediately
+0x0046c116 func stub_0046c116 hand Empty function returning immediately
+0x0046c121 func stub_0046c121 hand Empty function returning immediately
+0x0046c12c func debris_Init_6c12c hand Initializes debris object: counter increment, sprite anim, bbox set, zero velocity fields
+0x0046c1d8 func debris_ApplyGravity hand Copies previous bbox, subtracts 0x4000 from vertical velocity, calls move
+0x0046c237 func debris_UpdateAnim hand Advances animation using object position high words
+0x0046c27c func debris_UpdateBounce hand Bounces off floor with damping, deletes object when velocity small, decrements counter
+0x0046c3a2 func debris_CheckBoxOverlap hand Compares object bbox with player box, sets hit state and invokes callback
+0x0046c614 func s14_ObjInit hand Stage14 object init: clears velocity, sets sprite anim, reads params from level script stream DAT_004cfba8
+0x0046c75f func s14_ObjTimerUpdate hand Counts frames, plays sound FUN_0042af2f after 180 ticks while flag set, advances animation
+0x0046c7c7 func s14_ObjDrawBeam hand Projects object corners to screen and draws scaled quad via FUN_00401f67, toggles frame by timer
+0x0046ca6d func s14_PlatformInit hand Reads sprite set and flags from script stream, sets anim, bounding box from sprite size
+0x0046cbfc func s14_PlatformUpdate hand Saves previous bbox and resets collision box with stored size
+0x0046cc7a func s14_ObjSlideBounds hand Shifts hitbox corner coordinates according to movement flag bits
+0x0046cef9 func s14_ObjReadScriptParams hand Reads timer and eight short params from script stream into object
+0x0046cfa5 func stub_0046cfa5 hand Empty function returning immediately
+0x0046cfbb func s14_ObjProjectCorners hand Projects four corner offsets to screen, sets onscreen flag at +0xc4
+0x0046d0e4 func s14_ProjectileInit hand Initializes projectile aimed at player via FUN_0040d3de, random side, speed and animation setup
+0x0046d2d9 func s14_ProjectileUpdate hand Per-frame projectile movement, shrinking or friction by state, deletes when out of range
+0x0046d517 func s14_ProjectileAnim hand Updates projectile and shadow sprite animation frames by state
+0x0046d68a func s14_ProjectileHit hand Collision response: ground bounce, knockback state, hit sound via FUN_0042af2f
+0x0046d8e8 func s14_ProjectileTouchPlayer hand Sets hit state and calls object hit callback when player alive
+0x0046d942 func s14_SpawnerInit hand Deletes if flags missing, sets anim, bbox, cooldown 200
+0x0046d9ef func s14_SpawnerUpdate hand Cooldown then spawns object 0x2b when player nearby and plays sound
+0x0046db1f func s14_SpawnerAnim hand Updates sprite animation using object position
+0x0046db67 func s14_SpawnerHit hand On hit state sets death anim 0x101 and plays sound
+0x0046dbc7 func s14_CarrierInit hand Sets large bbox, zeroes carried object slots
+0x0046dc5b func s14_CarrierEnd hand If carried object flagged, calls FUN_0041d8ad, then FUN_0040d5a0 event
+0x0046dccd func s14_CarrierAttach hand Finds track segment under object and attaches it to player slot
+0x0046de30 func stage5_RegisterHandlers hand Registers stage5 loop callback and object types 0x51-0x59,0x14,0x15,0x92,0x2e via FUN_0040d919
+0x0046e026 func stage5_RunLoop hand Sets up stage5 bg05 map and loop, initial init calls then main per-frame loop
+0x0046e1d3 func stage5_PlaceScrollLayers hand Positions three parallax scroll layers and jarda ground layer from camera position, FUN_004021cb
+0x0046e283 func stage5_UpdateCamera hand Stage5 camera follow with smoothing, clamp to limits, zoom adjust, computes parallax layer offsets and screen bounds
+0x0046e8db func stage5_InitCamera hand Zeros camera struct, sets stage5 scroll limits and layer defaults
+0x0046e9f0 func s5_EnemyInit hand Stage5 enemy init: reads variant from script stream, sets sprite, bbox, random timer, hit points
+0x0046ebb1 func s5_EnemyUpdate hand Big per-frame enemy state machine: idle, walk, jump, attack approach to target, knockback, death by state switch
+0x0046f85d func s5_EnemyAttackPlayer hand Enemy contact with player: picks attack direction anim 0x108/0x109 from relative position, assigns target slot
+0x0046fd91 func s5_EnemyCollideEvent hand Collision event handler for enemy: wall/floor blocking by axis, or hit by player sets knockback anim 0x10c/0x10d with random velocity
+0x00470247 func s5_ObjDrawSprite hand Draws object sprite animation at its position high words
+0x00470295 func s5_PropInit hand Prop init: reads mode byte from script, sets sprite, expands hit box, state vars cleared
+0x00470447 func s5_PropUpdate hand Prop per-frame state machine: grab, carried animation, release launching held dwarf, random idle anim choice
+0x004709f7 func s5_PropOnPlayerContact hand Player collision handler: grab position choice, sets carried sprite set per dwarf type, flips facing
+0x00470d32 func s5_PropDraw hand Projects bbox corners and draws shadow polygon via FUN_004023b0, draws sprite and carried dwarf
+0x00470f98 func s5_PropOnHit hand On hit event sets anim 0x106, clears flags, and updates
+0x0047102f func s5_ThrownObjInit hand Initializes thrown/held object: copies position, sprite set, creates child via FUN_00407ed6, small bbox
+0x004711f3 func s5_ThrownObjUpdate hand State machine: idle wait 60 ticks, anim, launch with velocity and gravity, plays sound if on screen
+0x004716c6 func s5_ThrownObjHit hand Forwards hit event to FUN_0043a13c with owner and current object
+0x004716f4 func s5_ObjSetHitReaction hand Sets reaction codes 3 and 2 then calls object's custom callback at +0x40
+0x0047173b func s5_ObjOnPlayerBump hand If owner state 8, halves its x velocity, sets reaction 4/2 and calls callback
+0x004717af func s5_LiftObjEvent hand Event handler switch on reaction code: grab by player, set anim ids 0x100-0x10a, carry adjust
+0x00471b4d func s5_LiftObjDraw hand Draws sprite anim at 16.16 position high words, then draws child via FUN_0040b651
+0x00471bac func s5_LiftObjInit hand Initializes lift object: sprite anim, clears velocity, creates child collision object, random timer
+0x00471d2c func s5_LiftObjUpdate hand State machine: idle timer, grab dwarf, carry across, throw with velocity, sprite frame end checks
+0x004722a3 func s5_LiftObjChildHit hand Child collider callback: attaches player to lift object, sets sprite set by player type and facing
+0x00472506 func s5_LiftObjChildOnHit hand Forwards hit to FUN_0040c0e6 with owner and current object
+0x00472534 func s5_LiftObjChildEvent hand Event handler: player grab moves attached object or sets release anim 0x105
+0x00472786 func s5_LiftObjDrawFacing hand Draws lift object and attached player mirrored depending on facing flag 0x40
+0x004729dd func s5_FallingPropInit hand Initializes falling prop: reads three script words, sprite anim, random timer, bbox
+0x00472b00 func s5_FallingPropUpdate hand Per-frame update: computes projectile offsets from table, spawns random object type 0xe via FUN_00407bc4 when dwarves are high
+0x00472df6 func s5_FallingPropOnHit hand On player hit sets anim 0x101, clears flags, plays sound FUN_0042af2f(7,2,4)
+0x00472e88 func s5_FallingPropDraw hand Draws sprite then projects four corners and draws textured quad via FUN_00401f67 with angles from FUN_0042adbc
+0x0047310c func s5_BarrierInit hand Initializes barrier object: sprite anim, facing from script word, bbox by side, timer, FUN_0040b468 init
+0x004731f4 func s5_BarrierUpdate hand Per-frame: advances anim, state 2 calls FUN_004080b7 else saves previous position
+0x0047324c func s5_BarrierHit hand Forwards hit to FUN_0040c0e6 with owner and current object
+0x0047327a func s5_BarrierEvent hand On damage event subtracts damage from health at +0xb0, sets anim 0x101 when dead
+0x00473349 func s5_BarrierDraw hand Draws sprite at position then draws health bar via FUN_0040b651
+0x0047339f func s5_SpawnPairInit hand Initializes object, reads three script words, spawns linked child type 0x3e via FUN_00407bc4
+0x004734d7 func s5_SimpleObjUpdate hand Saves previous position, plays sound on anim frame zero, advances anim, clears flags
+0x0047358b func s5_ProjectileHitDwarves hand Hit handler spawning damage effects on other dwarves per state, calls object callbacks, spawns explosion type 0x31
+0x00473a00 func s5_ObjDrawSimple hand Draws sprite anim at 16.16 position high words
+0x00473a4e func s5_StaticObjInit hand Initializes static object: sprite, zero velocity, small bbox, anim 0x100
+0x00473b09 func s5_StaticObjUpdate hand Saves previous position, advances anim, clears flags
+0x00473b49 func s5_StaticObjHit hand Forwards hit to FUN_0040c0e6 with owner and current object
+0x00473b77 func s5_LinkedObjEvent hand Event: toggles anim of this object and linked partner object, sets global 1
+0x00473c6d func s5_LinkedObjDraw hand Draws sprite anim at 16.16 position high words
+0x00473cbb func s5_GuardInit hand Initializes guard enemy: sprite, hitbox child, patrol radius from DAT_004c9ad4, home position copy
+0x00473e68 func s5_GuardUpdate hand AI state machine: chase dwarf within range, approach, attack anim, return home, sound 1/2/0x11
+0x004745f8 func s5_GuardHit hand Forwards hit to FUN_0040c0e6 unless dwarf is in states 4 or 6
+0x0047464f func s5_GuardEvent hand Event handler: contact hurt, subtracts damage, sets death anim 0x106 or hurt anim 0x103, FUN_0045c424 on death
+0x00474802 func s5_GuardDraw hand Draws guard sprite unless state 4, then draws health bar via FUN_0040b651
+0x00474871 func s5_AmbientSoundTick hand Counts frames, after 800 plays sound 6/2/9 or 12 by dwarf height, rerolls random delay
+0x004748e9 func s5_BossInit hand Initializes boss: health bar init, sprites, shadow anim at 004bb478, hit box, reads two script x offsets
+0x00474b14 func s5_BossUpdate hand Boss state machine: slide deceleration, charge phases, timers, sound 7/2/0xf, shake counter
+0x00474f00 func s5_BossDraw hand Draws boss sprite with flags, shadow sprite, health bar or damage flash particle via FUN_0040b00d
+0x004750b0 func s5_BossHurtEvent hand Boss damage: subtracts health, picks hit reaction pose by player position, sets sprite flags, sound 1/1/2
+0x00475492 func s5_BossHitPlayer hand Boss touch handler: forwards hit, bounces boss on contact, triggers callback when boss moving fast
+0x004755ea func s5_ScenerySpriteInit hand Initializes scenery sprite: anim id and facing/flip flags from script words, zero velocity
+0x004756db func s5_ObjAnimOnly hand Update that only advances sprite animation FUN_00409cb3
+0x004756eb func s5_ObjDrawScreenPos hand Draws sprite anim at screen coordinates stored at +0xa,+0xe,+0x12
+0x00475740 func rng_Seed hand Stores seed into DAT_004b8220 random generator state
+0x00475753 func rng_Next hand Linear congruential generator: state times 5 plus 0x3573, returns state
+0x00475780 func s5_RotatingPartInit hand Initializes rotating part: sprite, saves origin, orbit radius 200, angle zero, child collider, sound handle
+0x00475924 func s5_RotatingPartUpdate hand Updates orbit position from FUN_0040d552, advances rotation angle wrapping 360 degrees, scales sprite size
+0x00475a9c func s5_RotatingPartDraw hand Draws sprite then four trapezoid cable segments between projected points via FUN_00402b5b
+0x00475e91 func s5_RotatingPartHit hand Forwards hit to FUN_0040c0e6 unless hurtable state flags forbid
+0x00475ee7 func s5_RotatingPartEvent hand On event 8 stops looping sound handle via FUN_0042b03a
+0x00475f3d func s5_SwitchObjInit hand Initializes small switch object: sprite, reads one script word selecting anim 0x100 or 0x101 and facing
+0x00476024 func s5_SwitchObjUpdate hand Counts down timer re-enabling hitbox, wraps sprite frame at end, advances anim
+0x004760f7 func s5_SwitchObjHit hand If hit from above while falling, triggers reaction 9 callback and sets hitbox timer 30
+0x0047618e func s5_SwitchObjDraw hand Draws sprite anim at 16.16 position high words
+0x004761dc func s5_BouncePadInit hand Initializes bounce pad: sprite, small box, zero z position, anim 0x100
+0x00476276 func s5_BouncePadUpdate hand Update that only advances sprite animation
+0x00476291 func s5_BouncePadHit hand If dwarf above pad, launches upward 3.0 with sideways velocity away from pad
+0x00476303 func s5_BouncePadDraw hand Draws sprite anim at 16.16 position high words
+0x00476351 func s5_BouncePadResetBox hand Sets 24x16 hit box and zeroes z position
+0x00476385 func stub_00476385 hand Empty function returning immediately
+0x00476390 func s5_BouncePadEvent hand If dwarf feet above top, sets reaction 3/2 and calls object callback
+0x004763ed func s5_ConveyorInit hand Initializes conveyor object with three overlay sprites, wide hitbox, spawns 7 linked segment colliders
+0x0047666a func s5_ConveyorUpdate hand State machine 0-3: scrolls segment boxes, advances overlay anim phases, sound 7/2/2
+0x00476907 func s5_ConveyorDraw hand Draws base sprite and per-segment overlay sprites with mirrored copy, anim frame wrap
+0x00476ac2 func s5_ConveyorEvent hand On event 10 switches to state 1 and disables all segment colliders
+0x00476b82 func s5_SegmentCollide hand Computes box overlap penetration per axis and direction flags, stores in collision globals, calls callback
+0x00476de2 func math_LineInterceptX hand Fixed-point line intercept: x1 minus FUN_0042ae10 interpolation along segment
+0x00476e29 func s5_FlyingBossInit hand Initializes flying enemy: sprite set, patrol x range from script words or default, health and counters
+0x004770b8 func s5_FlyingBossUpdate hand State machine: patrol range check, attack dive left or right, shake, throws projectiles type 0x29 with aim
+0x00477974 func s5_FlyingBossDraw hand Draws boss sprite at screen coordinates unless dormant state zero
+0x004779cf func s5_FlyingBossEvent hand Hit events: ground contact sets stunned slide, damage counts hits, after 4 hits enters dive-away state 3
+0x00477b87 func s5_ShotFxInit hand Initializes short-lived effect sprite with anim table DAT_004affa0 and small box
+0x00477bf8 func s5_ShotFxUpdate hand Saves previous position, advances anim frame, destroys object when anim finishes
+0x00477ca7 func s5_ShotFxDraw hand Draws sprite at screen coordinates stored in object
+0x00477cef func s5_ShotFxHit hand If hits player type 1, sets damage 1 reaction 2 and calls callback
+0x00477d3f func s5_SpawnerBoxInit hand Initializes stationary spawner object: sprite, 40x40 box, anim 0x100, counter zero
+0x00477dd2 func s5_SpawnerBoxUpdate hand Counts 250 frames then spawns object type 0x35 at own position, destroys itself when state 2
+0x00477e95 func s5_SpawnerBoxEvent hand On damage reaction 2 sets anim 0x101
+0x00477ee1 func s5_SpawnerBoxDraw hand Draws sprite anim at 16.16 position high words
+0x00477f2f func s5_FlyerInit hand Initializes flying enemy: sprite, zero velocity, sound handle FUN_0042af2f(5,2,7), anim 0x100
+0x00478013 func s5_FlyerUpdate hand Falls then swoops: dive toward dwarf with z velocity, bounce, chase at depth, destroys when off screen
+0x0047835c func s5_FlyerHit hand Sets reaction 3/2 and calls object callback
+0x004783a3 func s5_FlyerEvent hand Contact damage via FUN_0040b996, death anim 0x105 or 0x106 with sound 4/1/0xd, event 8 stops sound
+0x00478493 func s5_FlyerDraw hand Draws sprite anim at 16.16 position high words
+0x004784e1 func s5_TurretInit hand Initializes turret enemy: sprite, health from DAT_004c9ad4 plus difficulty, child collider, wide box
+0x004786a6 func s5_TurretUpdate hand AI: pick nearest dwarf in range, fire anim 0x101, spawn damaging shot box via FUN_00408999 hits dwarf
+0x00478bd3 func s5_TurretDraw hand Draws sprite anim at 16.16 position high words
+0x00478c21 func s5_TurretEvent hand On damage subtracts health, death anim 0x102 with sound 7/1/0xd or hurt anim 0x103
+0x00478d24 func stgA_ActorTouchPlayer hand calls collide helper FUN_0040c0e6 with player object and current actor
+0x00478d5b func stgA_ActorInit hand init sprite FUN_0040a60c, hp from global, child sprite, hitbox FUN_0040a073
+0x00478ef6 func stgA_ActorUpdate hand per-state AI switch: chase or flee player, spawn thrown child via FUN_00407bc4, move FUN_004087f3
+0x00479668 func stgA_ActorTouchPlayer_2 hand duplicate touch wrapper calling FUN_0040c0e6 on player and current actor
+0x0047969f func stgA_ActorGrabbedByPlayer hand sets player-held pointer, picks anim by dwarf id, calls FUN_0045b112
+0x004797dc func stgA_ActorOnHit hand damage handler: subtract hp, knockback velocity, hurt anim 0x104 or death anim 0x105
+0x004799ea func stgA_ActorDraw hand draw sprite FUN_0040a6f3 at position and hp bar FUN_0040b651
+0x00479a49 func stgA_SpawnerInit hand init sprite, reads spawn count from script pointer DAT_004cfba8, hitbox, position copy
+0x00479b48 func stgA_SpawnerUpdate hand animation state machine, counts loops then switches update fn to FUN_00407810
+0x00479ccc func stgA_SpawnerDraw hand draw sprite at screen pos via FUN_0040a2a6 projection, FUN_004025ef shadow with offset tables
+0x00479dd6 func stgA_BruiserInit hand init sprite and hp by flag, hitbox 0x20 wide, health display FUN_0045a7e5
+0x00479f37 func stgA_BruiserUpdate hand big AI switch: approach player, throw projectile object 0x99, idle spawn, grab and attack states
+0x0047ab3f func stgA_BruiserTouchPlayer hand calls collide helper FUN_0040c0e6 unless player state is 9
+0x0047ab86 func stgA_BruiserOnHit hand damage handler: reduce hp, hit stun anim 0x107, death anim 0x10a, FUN_0045c424 on kill
+0x0047ada0 func stgA_BruiserDraw hand draw sprite FUN_0040a6f3 and hp bar FUN_0040b651
+0x0047adff func stgA_ThrownInit hand init sprite, child object FUN_00407ed6, small hitbox, clears velocity
+0x0047aeeb func stgA_ThrownUpdate hand gravity -0x4000, move FUN_004087f3, explosion effect FUN_00409b20 on state 1, delete on state 2
+0x0047b005 func stgA_ThrownOnWallHit hand bounce velocity divided by -3 on wall or floor, sound FUN_0042af2f, set anim 0x101
+0x0047b176 func stgA_ThrownDraw hand draw sprite FUN_0040a6f3 at projected object position
+0x0047b1d0 func gfx_FillTriangleFlat hand software flat colour triangle fill, sorts vertices, per-scanline memset clipped to screen
+0x0047b5e9 func gfx_FillTriangleRemap hand triangle fill remapping each pixel through table DAT_004c3750, translucent shade, dword aligned
+0x0047bc31 func gfx_FillQuad hand fills quad as two triangles calling FUN_0047b5e9 or FUN_0047b1d0 by mode byte
+0x0047bcae func gfx_DrawTexturedPolyStrip hand walks sprite polygon spans with fixed-point slopes FUN_0042adbc
+0x0047c130 func stage9_RegisterObjectTypes hand sets stage init fn FUN_0047c374, registers 16 object types via FUN_0040d919
+0x0047c374 func stage9_Init hand loads stage9 packs FUN_0041cd29, resets globals, camera FUN_0047c6bd, music and palette setup
+0x0047c58b func stage9_DrawParallaxSky hand picks band from table DAT_004b88f8 by camera x, draws via FUN_004021cb
+0x0047c61b func stage9_DrawBackground hand draws background layers FUN_00402267 and FUN_00402302 and sky FUN_004020d6
+0x0047c6bd func stage9_UpdateCameraScroll hand computes camera target and clamps scroll bounds from DAT_004ce720 block, FUN_0040da4c
+0x0047cc6b func stage9_InitCameraBounds hand memset camera block 0x48, set scroll limits, copies to saved block DAT_004ce770
+0x0047cd70 func stage9_FlyingDebrisInit hand init sprite, velocity and params read from script ptr, hitbox, life 0x168 frames
+0x0047d244 func stage9_FlyingDebrisUpdate hand life countdown, gravity, friction per subtype switch, move FUN_004087f3, delete at expiry
+0x0047d46b func stage9_FlyingDebrisDraw hand draws sprite by subtype with frame from script table, flips by player side
+0x0047d6e0 func stage9_DebrisOnCollide hand reacts to hit source type: bounce reflect velocity, damage, sound, spawn FUN_00481149
+0x0047dbf8 func stage9_DebrisTouchPlayer hand if player attack frame active sets damage globals DAT_004cfb80 and DAT_004cfb82, calls hit callback
+0x0047dccf func stage9_BossInit hand loads many sprite sets FUN_0040b1c8 into globals, memset and memcpy boss state, spawns parts
+0x0047e382 func stage9_BossPickAttack hand random attack selection with cooldown timers at +0xf0 to +0xf7, uses rand FUN_00475753
+0x0047e627 func stage9_BossUpdate hand boss state machine: attack timers, sprite sets FUN_0040b1c8, sounds FUN_0042af2f, moves
+0x0047f37b func stage9_BossDraw hand draws boss body parts and effects with FUN_004023b0 and FUN_00402877 projections
+0x004800ba func stage9_DrawTripleSprite hand draws three sprites at x offsets -0x46, 0, 0x46 cycling frame via FUN_0040a6f3
+0x00480249 func stage9_BossPartOnHit hand part hit: platform state 0xd, velocity, sound, vertical clamp from DAT_004cfb84
+0x004807e3 func stage9_BossPartSetDying hand sets update fn FUN_00480f66, clears callbacks and child sprites, picks anim by dwarf
+0x00480904 func stage9_BossPartCollision hand box overlap test with player object, picks hit direction, FUN_00409a10 and FUN_0040b3b7
+0x00480ebd func math_DeadzoneDistance hand octagon distance estimate max plus half min, with deadzone param per axis
+0x00480f66 func stage9_BossPartDeathUpdate hand death movement: arc velocity, next fn FUN_0044b807, removes shadow
+0x00481149 func stage9_SpawnHitDebris hand random burst of debris objects FUN_00407bc4 at hit point with scattered velocity
+0x0048199a func stage9_ActorSteerToTarget hand steering to waypoint from table DAT_004b8d58 using angle FUN_00409f3a, face player
+0x00481ba7 func stage9_InitTrailPoints hand fills 8 trail position pairs offset from object start, count at +0xe4
+0x00481e1a func stage9_DrawTrailLines hand projects trail points FUN_0040a2a6 and draws line segments FUN_00402a7c
+0x00482332 func stage9_SpawnChainSegments hand reads count and params from script, spawns up to 8 linked child objects FUN_00407ed6
+0x004824e2 func stage9_ChainUpdateTimers hand decrements per-segment cooldown timers when segment active
+0x004825d4 func stage9_ChainDraw hand wrapper drawing trail lines via FUN_00481e1a
+0x004825fb func stage9_ChainTouchPlayer hand collision FUN_0040c778 against player, sets damage globals and calls hit callback
+0x00482770 func stage13_RegisterObjectTypes hand sets stage init fn FUN_00482808, registers 3 object types via FUN_0040d919
+0x00482808 func stage13_Init hand loads stage13 packs, jarda13 sprite, camera FUN_00482c06, palette, resets globals
+0x0048299c func stage13_InitCameraBounds hand memset camera block, scroll limits, copy to saved block DAT_004ce770
+0x00482a8a func stage13_DrawBackground hand draws sky FUN_004021cb and textured floor quad FUN_004023b0 with sprite
+0x00482c06 func stage13_UpdateCameraScroll hand camera target and clamp from DAT_004ce720 block, follows player FUN_00456332
+0x00483120 func stage13_BossPartInit hand init sprite with palette, hitbox, hit callback offsets, timers, hp
+0x0048329b func stage13_BossUpdate hand large boss AI: state switch, spawns object 0x6e, sounds FUN_0042af2f, attacks
+0x00484a51 func stage13_BossDraw hand draw by state with shadow flags, extra sprites FUN_0040b00d and hp bar
+0x00484eb1 func stage13_BossOnHit hand mode 1 hurt FUN_0040b996, mode 2 subtract hp, sound 6 2 9, death state 0x20
+0x00485009 func stage13_BossTouchPlayer hand touch collide FUN_0040c0e6 and sets damage globals when player bounds contact
+0x004850ce func stage13_MarkerInit hand init invisible marker sprite, small hitbox 10, clears velocity
+0x00485174 func stage13_MarkerUpdate hand deletes when timer zero else moves FUN_004087f3
+0x004851fe func stage13_MarkerDraw hand draws sprite when state above 0
+0x00485255 func stage13_PropOnHit hand on hit state change by flags: delete, bounce anim 0x102 or 0x103
+0x004853c0 func stage13_PropTouchPlayer hand if touching player sets damage 1 mode 2 and calls hit callback
+0x00485421 func stage13_ComputeAimVectors hand rotates two direction vectors using sin and cos FUN_00409a10 FUN_0040b3b7
+0x00485577 func stage13_EnemyInit hand init sprite, aim target, hp 0x3c halved on easy, hitbox, table FUN_0040b2d3
+0x0048571c func stage13_EnemyChooseState hand picks state 1 to 5 from distance and position to player, adds 0x100 flag if changed
+0x00485828 func stage13_EnemyUpdate hand main enemy AI switch with flash timers, spawns object 0x80, sounds, load FUN_0041cd29
+0x004868c9 func stage13_EnemyDraw hand draws aim lines FUN_004025ef and sprites by state with FUN_0040b00d
+0x00486c5d func stage13_EnemyOnHit hand mode 1 stun, mode 2 subtract hp sound 6 2 9, death 0x108 or hurt 0x107, invuln 0xf
+0x00486dc0 func stage13_EnemyTouchPlayer hand touch collide FUN_0040c0e6 unless player state 8 and above, may set damage
+0x00486e85 func stage13_PropHitByPlayer hand on player hit set damage mode 2, sound, mark owner state 2, flip velocities
+0x00486f34 func stage13_PropHitSimple hand if player sets damage mode 2 amount 1 and calls hit callback
+0x00486f8c func stage13_PropSetOwnerFlag hand if hit by player marks parent actor flag at +0xdd to 2
+0x00486fc8 func stage13_ProjectileInit hand init sprite, child FUN_00407ed6, hitbox, clears velocity
+0x004870b4 func stage13_ProjectileUpdate hand explosion effect FUN_00409b20 state 1, gravity, moves, deletes when timer ends
+0x004871c9 func stage13_ProjectileOnWallHit hand bounce velocity divided by -4 on wall or floor with sound 6 2 10
+0x00487387 func stage13_ProjectileDraw hand draw sprite FUN_0040a6f3 at projected position
+0x004873cc func stage13_ProjectileSetDamage hand sets damage 6 mode 2 and calls hit callback
+0x00487413 func stage13_ReadBoundsFromScript hand reads 6 shorts of position and box from script pointer DAT_004cfba8 into object
+0x004874b7 func stub_004874b7 hand empty function that only returns
+0x00487780 func avi_OpenIntroVideo hand MCI open of avivideo device via mciSendCommandA, returns success
+0x004877fd func avi_GetDeviceStatus hand mciGetDeviceID avivideo then mciSendCommandA 0x804 command
+0x00487834 func menu_EnterVideoPlayback hand greys menu items EnableMenuItem, DrawMenuBar, opens video via avi functions
+0x004879aa func win_ToggleFullscreenMode hand sets window title Three Dirty Dwarves, screen metrics, DirectDraw mode switch FUN_0043c32c
+0x00487b66 func avi_ResizeVideoWindow hand GetClientRect, mciSendCommandA window rect, MoveWindow centering video
+0x00487c42 func avi_Stop hand mciSendCommandA 0x804 stop, clears flags, InvalidateRect window
+0x00487c8c func avi_PlayFile hand _chdrive and _chdir to path, mciSendCommandA open file in window, resize
+0x00487dc1 func avi_Close hand mciSendCommandA 0x808 close device
+0x00487de9 func avi_Play hand mciSendCommandA 0x806 play, RedrawWindow, runs message loop avi_PumpMessages
+0x00487eb8 func avi_PumpMessages hand PeekMessage loop until key or mouse message, WaitMessage, TranslateMessage and DispatchMessage
+0x00487f80 func stage11_BossInit hand memset state, memcpy table, loads stage11 elsofal and ablak_u sprite packs via FUN_0040379b
+0x00488261 func stage11_BossUpdate hand boss AI state machine, sprite sets FUN_0040b1c8, spawns objects, sounds FUN_0042af2f
+0x00488fcd func stage11_BossDraw hand draws boss parts and effects FUN_004023b0 and FUN_00402a7c with sprite tables
+0x004899b4 func stage11_BossWindowUpdate hand window or shutter parts state update, rand FUN_00475753, sprites, sounds
+0x0048a0ea func stage11_BossTouchPlayer hand calls FUN_0043a13c with player and current object
+0x0048a118 func stage11_DebrisActorInit hand init sprite, child FUN_00407ed6, hitbox, velocity zero
+0x0048a24c func stage11_DebrisActorUpdate hand state 2 timer 0x78 spawns FUN_00409b20 effects with side offset
+0x0048a404 func stage11_DebrisActorDraw hand draw sprite FUN_0040a6f3 at position
+0x0048a44c func stage11_DebrisActorOnHit hand if mode 2 and state 0 sets anim 0x101 velocity and new hitbox
+0x0048a4c0 func stage11_DebrisActorTouch hand collide helper FUN_0040c0e6 with player
+0x0048a4ee func stage11_InitDebrisPool hand init shared debris sprite, clears 100 entry pool at DAT_004bbf90
+0x0048a5c3 func stage11_SpawnDebris hand finds free slot in 100 entry pool and sets position and velocity
+0x0048a694 func stage11_UpdateDebrisPool hand per entry gravity -0x4000 integrate, draw FUN_0040a6f3, advance anim, free below ground
+0x0048a7e3 func stage11_PropTouchById hand if touching object id 0x38 sets damage 1 mode 2 and calls hit callback
+0x0048a83b func stage11_ItemInit hand init sprite, anim id from script, small hitbox, bounce counter 1
+0x0048a90a func stage11_ItemUpdate hand move FUN_004087f3, animate FUN_00409cb3, delete on timeout or out of bounds
+0x0048a9c2 func stage11_ItemDraw hand draw sprite FUN_0040a6f3 at position
+0x0048aa0a func stage11_ItemOnHit hand mode 1 halve velocity, mode 0xd landing snap to ground, anim 0x102
+0x0048ab17 func stage11_ItemTouchPlayer hand if player or id 0x46 with flag sets damage 1 mode 0xe and callback
+0x0048ab9b func stage11_ControllerInit hand init main sprite, secondary sprite, timers, positions, projection FUN_0040d552
+0x0048ae0f func stage11_ActorUpdate hand reads pad bits DAT_004c3a6a, accelerates velocity at +0xc8 capped 0x500000, timers, state switch (was stage11_ControllerUpdate)
+0x0048bbb2 func hud_DrawLinkedSprites hand places two sprite pairs from player struct at DAT_004cfb70, computes angle ratios via FUN_0040a2a6, FUN_0040a6f3 draws
+0x0048c16b func actor_HitApplyDamageTimer hand if hit state, adds damage to +0xe2 counter, sets hitstun timer 0x1e, branches on object type 8 or CR
+0x0048c2b4 func actor_EnterHitState hand type 8 object with positive hp sets DAT_004cfb80=2 hit state, calls handler pointer +0x40
+0x0048c347 func gfx_BlendRGB555 hand blends two 15-bit RGB555 colors by percent param_3 per channel using FUN_0042ada0 fixed multiply
+0x0048c490 func obj_RegisterTypeHandlers hand registers init/update/draw/hit/event handler tables for object types 0x37-0x4e and 0xe via FUN_0040d919
+0x0048c6a6 func stage4_RunLevelLoop hand loads stage4 bg04/fg04 .pln maps, jarda, st04.pal, then per-frame loop of camera, objects, draw until done flag
+0x0048c838 func cam_ApplyViewTransform hand feeds scroll globals DAT_004bccf8/DAT_004bcd98 into FUN_004021cb, FUN_00402267 and FUN_004020d6 render setup
+0x0048c8c3 func cam_UpdateScroll_8c8c3 hand smooth camera follow: eases toward target position, clamps to bounds flags in DAT_004ce75a, copies camera state, sets render scroll
+0x0048cec3 func cam_Init hand memsets camera struct DAT_004ce720 (0x48 bytes) and sets default bounds, offsets and flags
+0x0048cfe0 func map_DrawTileLayerRows hand blits scrolling tile layer rows (16x16 tiles, 0x28 columns) into back buffer, advances map streaming via FUN_0043e986
+0x0048d379 func screen_ClearBandRows hand zero-fills 16 scanlines of 0xa0 dwords each in the back buffer DAT_004bd5cc using pitch DAT_004bda1c
+0x0048d400 func slot_Alloc hand finds first free of three slots in DAT_004c3a90 table, marks used, returns index or -1
+0x0048d465 func slot_Free hand clears slot flag in DAT_004c3a84 table indexed by object short at +0x96, returns 0
+0x0048d48c func actorA_Init hand initializes object: anim FUN_0040a60c, zero velocity, reads spawn parameters from level byte stream DAT_004cfba8, sets hitbox
+0x0048dbcb func actorA_OnHitEnterState6 hand if linked object anim 0xc, sets state 6, calls handler, halves velocity, sets anim 0x10d, plays sound FUN_0042af2f
+0x0048dc81 func actorA_Update hand large per-frame state machine for actor: copies position, switches on anim state, movement, collision, attacks, spawns, damage
+0x004907d8 func actorA_StartCarry hand if type 1 actor links target object via +0xea/+0xec fields, sets velocity, uses FUN_0045a752 and FUN_0045b112
+0x0049095f func actorA_Draw hand draws main sprite and linked sprite at world position shifted right 16 using FUN_0040a6f3 and animation FUN_0040b651
+0x00490a2d func actorA_OnHit hand sets hit animation 0x103, timer fields, calls FUN_0045c424 knockback, checks linked object flags
+0x00490c28 func actorA_EventDispatch hand switch on DAT_004cfb80 event state: handles idle, hit, death, sound FUN_0042af2f, FUN_0040b996 animation advance
+0x00491992 func actorA_CheckContactHit hand calls FUN_0040c0e6 collision resolve with linked object unless its anim is 0xc
+0x004919ef func actor_CalcFacingToTarget hand computes dx to player, stores distance at +0xba, direction flag 4, fills output struct param_3 with delta values
+0x00491b8c func actorA_OnStomp hand plays sound (4,1,3), sets event state 3 then 2 and calls object handler pointer +0x40
+0x00491bfd func stub_00491bfd hand returns 0 only
+0x00491c1a func actorB_Init hand sets anim FUN_0040a60c sprite 0x80, zero velocity, reads parameters from level byte stream, hitbox FUN_0040a073
+0x00491dc0 func actorB_Update hand per-frame state machine on anim state at +0x48: movement, sound, collision FUN_004087f3, timers
+0x00492111 func actorB_OnContact hand calls FUN_0040c0e6 contact/damage resolve between linked object and current object
+0x00492157 func actorB_OnHitEnterState hand sets event state 3 then 2, handler call, plays sound (6,1,3), adjusts velocity if position beyond limit
+0x00492230 func actorB_EventDispatch hand state 1 handler: reads pad bits DAT_004cfb88, advances anim FUN_0040b996, knockback FUN_0045c424
+0x0049246c func actorB_Draw hand draws sprite at world pos via FUN_0040a6f3 and advances shadow anim FUN_0040b651
+0x004924cb func actorC_Init hand sets sprite 0x80, data pointer DAT_004b9ed0, hitbox (-8,0,-8,8,0x10,8), downward velocity, +2 position adjust
+0x004925e3 func actorC_Update hand per-frame state machine on +0x48: falling/bounce velocity updates, collision FUN_004080b7, sound FUN_0042af2f
+0x004928d8 func actorC_OnHitEnterState2 hand sets event state 2 via DAT_004cfb82, calls handler pointer +0x40
+0x00492938 func actorC_EventDispatch hand state 1 calls FUN_0040b996 animation advance, state 2 sets +0xb8 to 0xffff
+0x004929b2 func actorC_Draw hand draws sprite at world position via FUN_0040a6f3
+0x00492a00 func actorD_Init hand sets sprite 0x80, data pointer DAT_004b9ef8, hitbox (-10,0,-0x14,10,0x14,0x14), gravity velocity
+0x00492b0a func actorD_Update hand per-frame state machine: falling, lands at ground y +0xb0, sets anim 0x101, collision FUN_004080b7
+0x00492d85 func actorD_OnHitEnterState2 hand sets event state 2 and calls handler pointer +0x40
+0x00492dd5 func actorD_Draw hand draws sprite at world position via FUN_0040a6f3
+0x00492e23 func actorE_Init hand sets sprite 0x80, data DAT_004b9f18, hitbox (-0xe,0,-0x20,0xe,0x40,0x20), reads spawn byte from level stream
+0x00492f5f func actorE_Update hand per-frame: animation tick +0xc0 vs +0xe0 then anim 0x101, movement, collision, sounds
+0x0049321d func actorE_Draw hand draws sprite at world position via FUN_0040a6f3
+0x0049326b func actorE_OnContact hand calls FUN_0040c0e6 contact/damage resolve for current object
+0x004932a2 func actorE_OnHitKnockback hand state 2: sets anim 0x102, calls FUN_0045c424 knockback, clears hit timer and linked flag
+0x00493313 func actorF_Init hand sets sprite 0x80, data DAT_004b9f38, anim fields 0xffff, hitbox FUN_0040a073, reads spawn byte from level stream
+0x0049347e func actorF_Update hand per-frame state machine on +0x48 with movement, collision FUN_004080b7, sound FUN_0042af2f, linked object clear
+0x00493743 func actorF_Draw hand draws sprite at world position via FUN_0040a6f3 and animation FUN_0040b651 on +0xd0 block
+0x004937a2 func actorF_OnHitEnterState10 hand sets event state 10, calls handler pointer +0x40, clears flag at +6 of linked object
+0x004937fb func actorF_OnHitDamage hand state 2: subtracts DAT_004cfb82 damage from hp +0xc6, on zero sets anim 0x103 and knockback
+0x0049391e func prop_Init hand random idle timer from FUN_00475753 masked 0x3f stored at +0xc0, hitbox FUN_0040a073 1x1
+0x00493966 func prop_Update_93966 hand counts frames +0xc0 past 0xef, then rerolls random timer FUN_00475753 and triggers ambient effect
+0x00494630 func _heap_alloc_dbg hand CRT debug heap allocation from dbgheap.c: checks heap, client alloc hook, size validity, block header
+0x00495070 func _free_dbg hand CRT wrapper calling _free_dbg_nolock with normal block use
+0x00495090 func _free_dbg_nolock hand CRT debug free: validates pointer and block header guard bytes, reports DAMAGE before/after, frees block
+0x00495650 func _CrtSetBreakAlloc hand CRT swaps debug break-allocation global DAT_004b9f70 returns old value
+0x00495720 func _CrtSetAllocHook hand CRT stores client allocation hook pointer PTR_FUN_004ba064 returns previous
+0x00495c60 func _CrtIsValidHeapPointer hand CRT checks block at ptr-0x20 via __CrtIsValidPointer and HeapValidate
+0x00495dd0 func _CrtSetDumpClient hand CRT swaps client dump callback global DAT_004e828c returns previous
+0x00496690 func abs hand integer absolute value using sign mask
+0x00496730 func _ctrandisp1_thunk hand CRT thunk calling __ctrandisp1
+0x0049673a func _ctrandisp1_thunk_2 hand CRT thunk calling __ctrandisp1 with no args
+0x00496760 func _fpmath_init hand CRT floating point init: sets trap handlers, detects Pentium FDIV bug, sets default precision
+0x00496790 func _fptrap_init hand CRT assigns floating point trap handler pointers __fptrap table to code labels
+0x004967e0 func labs hand long absolute value using sign mask
+0x00496830 func strcpy hand CRT strcpy dword-at-a-time optimized, returns destination
+0x00496840 func strcat hand CRT strcat: scans to terminator of dest then copies source dword-wise
+0x00496fe0 func _dbgheap_UserToHeader hand subtracts 0x20 header size from user pointer
+0x00497270 func _ctrandisp1_thunk_3 hand CRT thunk calling __ctrandisp1 with two args
+0x004972a8 func _ctrandisp2_thunk hand CRT thunk calling __ctrandisp2 with four args
+0x00497600 func _getcwd hand CRT current directory wrapper calling _getdcwd with drive 0
+0x00497630 func _getdcwd hand CRT gets current directory for drive via GetCurrentDirectoryA or GetFullPathNameA, mallocs buffer if null
+0x004988c0 func _doexit hand CRT exit processing: runs terminators __initterm, dumps leaks __CrtDumpMemoryLeaks, ExitProcess or TerminateProcess
+0x00498a00 func _CrtDbgBreak hand calls DebugBreak
+0x00498b50 func _CrtSetReportHook hand CRT swaps report hook global DAT_004e8278 returns previous
+0x00498b80 func _CrtDbgReport hand CRT debug report: formats assert message, writes to file, OutputDebugString, loads user32 wsprintfA for message box
+0x00498f60 func _CrtMessageWindow hand CRT builds Expression/Module/File/Line text and shows assertion message box, handles abort retry ignore
+0x00499650 func __alloc_osfhnd hand CRT finds free file handle slot in _osfhnd table, mallocs new 32-entry block as needed
+0x00499770 func _close hand CRT closes file descriptor: checks handle table flags, CloseHandle, GetLastError, frees osfhnd
+0x00499bb0 func _write hand CRT low-level write using WriteFile, handles text mode LF to CRLF translation via 1KB buffer, __lseek for append
+0x00499eb0 func _set_new_mode hand swaps CRT global DAT_004bbd2c and returns old value
+0x00499ee0 func _get_new_mode hand provisional: returns CRT global DAT_004bbd2c
+0x00499f70 func _nh_malloc hand CRT malloc with new-handler retry loop __callnewh, size zero becomes one, uses _heap_alloc
+0x00499ff0 func _heap_alloc hand CRT allocation wrapper calling HeapAlloc
+0x0049a020 func stub_0049a020 hand returns 1 only
+0x0049a040 func _heap_realloc hand CRT clamps size to 0xffffffe0 min 1, HeapReAlloc on process heap
+0x0049a090 func _realloc hand CRT realloc: null calls malloc, size zero frees, else HeapReAlloc with __callnewh retry
+0x0049a150 func _free_base hand CRT free calling HeapFree on process heap if pointer non-null
+0x0049a180 func _heapchk hand CRT validates heap with HeapValidate, sets error 0x78 on failure
+0x0049a1e0 func _heapwalk hand CRT heap walker using HeapLock, HeapWalk, HeapValidate, HeapUnlock, memset on entry struct
+0x0049a3a0 func _heap_init hand CRT creates process heap via HeapCreate
+0x0049a3d0 func _heap_term hand CRT destroys process heap via HeapDestroy
+0x0049a4b0 func _output hand CRT printf formatting engine from output.c: handles flags, width, precision, %d %s %c %f, 64-bit ints, wide chars
+0x0049b4de func _fpmath_Epilogue hand CRT x87 math tail clears flag DAT_004bbd38, uses __87except and fscale
+0x0049b4e5 func _fpmath_ScaleResult hand CRT x87 helper using fscale and __87except, stores result double to DAT_004bbd30
+0x0049b6f0 func _ms_p5_test_fdiv hand CRT detects Pentium FDIV bug using GetProcessAffinityMask, SetThreadAffinityMask via KERNEL32 GetProcAddress
+0x0049bf50 func _dbgheap_HeaderToUser hand adds 0x20 header size to block pointer
+0x0049c94a func _save_math_frame hand CRT math error helper stores caller args and ebp frame into globals DAT_004ba4c8..d0
+0x0049ca6c func _fp_AsinAcosHelper hand CRT x87 helper computing sqrt((1+|x|)(1-|x|)), checks NaN
+0x0049ca9c func _fp_ReturnConst hand CRT returns 10-byte float constant _DAT_004babba
+0x0049cf90 func _setenvp hand CRT builds environ array: counts entries not starting with equals sign, mallocs and copies each string
+0x0049d0d0 func _setargv hand CRT gets program name via GetModuleFileNameA, mallocs, calls parse_cmdline to fill argv
+0x0049d820 func ___crtGetEnvironmentStringsA hand CRT gets environment via GetEnvironmentStringsW with WideCharToMultiByte conversion, falls back to ANSI
+0x0049da70 func _setmbcp hand CRT sets multibyte code page: GetCPInfo, getSystemCP, setSBCS, builds lead byte table
+0x0049df50 func _getmbcp hand CRT returns current multibyte code page DAT_004ba74c
+0x0049df70 func __initmbctable hand CRT initializes multibyte code page table by calling _setmbcp
+0x0049df90 func _ioinit hand CRT lowio init: mallocs handle table, GetStartupInfoA inherited handles, GetFileType, GetStdHandle, SetHandleCount
+0x0049e3dd func _local_unwind2 hand CRT SEH local unwind trampoline calling __local_unwind2
+0x0049e460 func _NMSG_WRITE hand CRT writes runtime error message by number: Runtime Error! Program name, console or MessageBox
+0x0049e900 func _set_osfhnd hand CRT associates OS handle with fd, calls SetStdHandle for stdin/out/err
+0x0049ea00 func _free_osfhnd hand CRT releases osfhnd entry, resets std handle with SetStdHandle
+0x0049eb10 func _get_osfhandle hand CRT returns OS handle for fd after validating fd in table
+0x0049ec90 func _commit hand CRT flushes file buffers to disk using FlushFileBuffers, sets errno on failure
+0x0049f9c0 func _sopen hand CRT opens file: CreateFileA with access, share, create flags, GetFileType, __alloc_osfhnd, text mode detect, __lseek
+0x004a067b func _fp_ReturnOne hand CRT x87 returns float 1
+0x004a0716 func _fp_SetFlagLoadConst hand CRT x87 helper loads constant _DAT_004babb0, sets stack flag byte at ebp-0x90
+0x004a0733 func stub_004a0733 hand returns only
+0x004a08e1 func _fp_ClassifyInteger hand CRT x87 helper checks ROUND(x)==x for integer test returns 2
+0x004a1660 func _tzset hand CRT reads TZ environment variable, parses name offset DST, else GetTimeZoneInformation, sets tzname
+0x004a1d30 func _cvtdate hand CRT computes DST transition date from rule: month, week, day, hour, year using day-of-month tables
+0x004a1f90 func _fcloseall hand CRT loops streams from index 3 calling _fclose on open ones, returns count
+0x004a2050 func _chsize hand CRT changes file size: __lseek, zero-fills with 4KB buffer via _write, SetEndOfFile, asserts size >= 0
+0x004a2300 func _pow_SpecialCases hand CRT pow special case handling for infinities, zero and fabs compare to 1.0
+0x004a2550 func _fp_RoundWithClass hand CRT classifies double via FUN_004a5ad0 then rounds via FUN_004a55c0
+0x004a3d50 func stub_004a3d50 hand returns 0 only
+0x004a3de0 func stub_004a3de0 hand returns only
+0x004a5360 func __chkstk hand CRT stack probe: walks stack down in 0x1000 pages for large allocations
+0x004a55c0 func _frnd hand CRT rounds double to integer via ROUND, returns long double
+0x004a5650 func _floor_Helper hand CRT x87 helper with __ctrlfp, __decomp, __except1 and __handle_qnan1 for domain and NaN cases
+0x004a5ad0 func _fpclass_Helper hand CRT classifies double via __sptype: zero, denormal, infinity, NaN returns flags
+0x004a5b80 func _fp_LongDoubleAdd hand CRT 80-bit extended arithmetic helper using ___addl, ___shl_12, ___shr_12 on 12-byte values

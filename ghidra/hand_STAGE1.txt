@@ -1,0 +1,4 @@
+0x06060000 func stage1_RegisterEventHandlers hand clears bss, registers stage slot callbacks and event ids 0x14,0x15,0x2d,0xe-0x13,0x2e,0x33,0x3d,0x3e
+0x06060638 func stage1_UpdateCamera hand follows player position with clamps and scroll limits, sets scroll registers and VDP2 offsets
+0x06060bec func stage1_InitStage hand zeroes camera state, fills scroll plane tiles, loads STAGE1 BXSTREET BIN background
+0x06065f68 func stage1_TickRandomSpawn hand counts frames then picks a random spawn type 9 or 0xc by position

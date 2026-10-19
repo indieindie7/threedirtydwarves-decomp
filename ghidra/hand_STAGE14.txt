@@ -1,0 +1,7 @@
+0x06060000 func stage14_Init hand clears BSS via memset, sets stage table entry, registers actor handlers
+0x060604a8 func stage14_SetupSpriteSlots hand fills two sprite command slots from object fields, flag 0x80, offsets
+0x06060560 func stage14_PlaceAttachedParts hand positions part sprites relative to anchor using polar helper, branches on x sign
+0x06060650 func stage14_SetupScene hand zeroes scene struct, sets scroll params, 64-entry init loops
+0x06060828 func stage14_UpdateCamera hand scrolls camera following player with clamps, sets scroll registers per frame
+0x060623e0 func stage14_ComputeRotatedOffsets hand rotates offset vectors by two angles using sin and cos, outputs positions and velocity
+0x06062654 func stage14_ChooseAttackSide hand picks side code 1-4 from horizontal distance between boss and player

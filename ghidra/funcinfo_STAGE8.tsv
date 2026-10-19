@@ -1,0 +1,5 @@
+F 06060000 stage8_Init USER_DEFINED 212
+F 06060538 stage8_UpdateCamera USER_DEFINED 898
+F 060609b0 stage8_SetupScene USER_DEFINED 324
+F 06060dac stage8_UpdateTrolleyInput USER_DEFINED 162
+F 06060e70 stage8_HandleTrolleyMove USER_DEFINED 112

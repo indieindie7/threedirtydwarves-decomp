@@ -1,0 +1,7 @@
+0x06060000 func stage11_Init hand clears BSS via memset, sets stage table entry, registers actor handlers
+0x060603d8 func stage11_SetupScene hand zeroes scene struct, sets scroll params, 64-entry init loops
+0x060605c0 func stage11_UpdateCamera hand scrolls camera following player with clamps, sets scroll registers per frame
+0x06062790 func stage11_InitParticles hand inits 100-slot particle array, clears active flags, sets base object fields
+0x06062828 func stage11_SpawnParticle hand finds free slot among 100, stores position shifted 16.16 and velocities, marks active
+0x0606289c func stage11_UpdateParticles hand integrates velocity with gravity, retires fallen particles, draws active ones
+0x06063c80 func stage11_BlendColor555 hand blends two 15-bit RGB colors by factor 0-99 per channel using fixed-point mul

@@ -1,0 +1,4 @@
+0x06060000 func stage2_RegisterEventHandlers hand clears bss, registers stage slot callbacks and event ids 0x1f,0x27,0x2f,0x3b
+0x0606011c func stage2_BuildRotationMatrix hand computes sin cos products into 3x3 matrix, fills per-line scroll angle table
+0x060605ac func stage2_UpdateCamera hand updates camera x y from player positions with sine-based sway, clamps and scroll registers
+0x06060af0 func stage2_InitStage hand zeroes camera state, sets scroll parameters, loads background and sets plane flags

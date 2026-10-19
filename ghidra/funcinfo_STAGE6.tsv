@@ -1,0 +1,9 @@
+F 06060000 stage6_RegisterEventHandlers USER_DEFINED 128
+F 0606038c stage6_InitStage USER_DEFINED 268
+F 06060554 stage6_UpdateCamera USER_DEFINED 704
+F 060616c0 stage6_UpdateFlashingLights USER_DEFINED 326
+F 06062c5c stage6_DrawTripleAnimSprite USER_DEFINED 234
+F 060630d4 stage6_InitBossDrawState USER_DEFINED 160
+F 06063764 stage6_SpawnBossAttack USER_DEFINED 1524
+F 06063f8c stage6_BuildChainPoints USER_DEFINED 538
+F 060641e4 stage6_DrawChainLinks USER_DEFINED 616

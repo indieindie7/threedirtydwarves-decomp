@@ -1,0 +1,4 @@
+0x06060000 func stage4_RegisterEventHandlers hand clears bss, registers stage slot callbacks and many event ids
+0x0606054c func stage4_UpdateCamera hand follows player position with clamps and scroll limits, sets scroll registers
+0x06060aa0 func stage4_InitStage hand zeroes camera state, fills scroll tiles, loads STAGE4 BXDAY BIN background
+0x06068654 func stage4_DrawPlayerSprite hand draws player sprite at 16.16 position, with mirrored copy when flag 0x40 or wrap

@@ -1,0 +1,20 @@
+0x06060000 func stage12_Init hand clears BSS via memset, sets stage table entry, registers actor handlers
+0x060603a0 func stage12_SetupScene hand zeroes scene struct, sets scroll params, loads stage assets
+0x0606056c func stage12_UpdateCamera hand scrolls camera following player with clamps, sets scroll registers per frame
+0x06060988 func stage12_SwapDwarf hand swaps roster order of dwarves unless state blocks, exchanges parallel arrays
+0x060617cc func stage12_StartPlayerAction hand provisional: on pad bit 0x20 sets player state fields when idle, returns action value
+0x06061864 func stage12_UpdateWaypointFollow hand advances actor along waypoint table by index, compares distance to target
+0x06062d2c func stage12_ComputeDirectionBits hand computes dx/dy to player, returns direction flag bits 4/8 and 1/2
+0x06063294 func math_FixedSqrt hand Newton iteration fixed-point square root with divide helper, returns 0 for 0
+0x060632f8 func math_FixedHypot hand length of 2D fixed vector via abs, scaling for large values, squares and sqrt
+0x060633e0 func spline_ComputeCoefficients hand builds cubic spline second derivatives from knot arrays, differences and tridiagonal solve
+0x0606355c func spline_Evaluate hand binary-searches knot interval, evaluates cubic spline value at parameter
+0x06063628 func spline_EvaluateWithDerivative hand binary-searches knot interval, evaluates cubic spline and derivative output
+0x06063750 func spline_ComputeChordLength2D hand cumulative chord length of 2D points, normalised by total
+0x06063808 func spline_ComputeChordLength3D hand cumulative chord length of 3D points, normalised by total
+0x060638e0 func spline_Evaluate2D hand evaluates x and y splines at parameter, writes two outputs
+0x06063930 func spline_Evaluate2DTangent hand evaluates x,y splines with derivatives and normalises tangent vector
+0x06063a30 func spline_Evaluate3DTangent hand evaluates x,y,z splines with derivatives and normalises tangent vector
+0x06063b24 func spline_ValidateCounts hand returns second arg if first > 2 and second > 1 else 0
+0x06063b3a func spline_LoadParamBlock hand copies nine words from block to globals if block count covers requested index
+0x06063ba4 func spline_BuildFromPoints hand validates, copies point pairs into arrays, computes spline coefficients, then evaluates

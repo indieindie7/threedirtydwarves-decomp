@@ -1,0 +1,12 @@
+F 06060000 stage7_RegisterEventHandlers USER_DEFINED 128
+F 06060498 stage7_UpdateCamera USER_DEFINED 902
+F 060608dc stage7_InitStage USER_DEFINED 454
+C 06060bac
+F 06060bac stage7_LoadSprites USER_DEFINED 186
+F 06060c7c stage7_DrawRotatedQuad USER_DEFINED 788
+F 06060fe0 stage7_BuildRotationMatrix USER_DEFINED 280
+F 060622dc stage7_UnpackSpriteFrame USER_DEFINED 252
+F 06062400 stage7_SetSpriteAnimation USER_DEFINED 480
+C 060622dc
+F 06065044 stage7_DrawPlayerSprite USER_DEFINED 342
+F 060668a4 stage7_TickRandomSpawn USER_DEFINED 82

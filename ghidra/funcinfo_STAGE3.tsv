@@ -1,0 +1,4 @@
+F 06060000 stage3_RegisterEventHandlers USER_DEFINED 354
+F 060605a0 stage3_UpdateCamera USER_DEFINED 1110
+F 06060b14 stage3_InitStage USER_DEFINED 254
+F 06067708 stage3_DrawPlayerSprite USER_DEFINED 342

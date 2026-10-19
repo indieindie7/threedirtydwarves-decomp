@@ -1,0 +1,9 @@
+0x06060000 func stage6_RegisterEventHandlers hand clears bss, registers stage slot callbacks for event ids 5,6,8
+0x0606038c func stage6_InitStage hand zeroes camera state, sets scroll parameters, loops 0x40 rows twice to set scroll tables
+0x06060554 func stage6_UpdateCamera hand follows player and boss x with smoothing, clamps to limits, sets scroll registers
+0x060616c0 func stage6_UpdateFlashingLights hand picks random light indexes with countdown timers, writes palette entries from tables
+0x06062c5c func stage6_DrawTripleAnimSprite hand draws sprite three times at offsets -0x46,0x46,0 advancing animation frame counters
+0x060630d4 func stage6_InitBossDrawState hand sets object draw callback, resets child links, picks facing by byte 0,1,2
+0x06063764 func stage6_SpawnBossAttack hand rng-driven switch on attack type 1,5,6,8 spawning projectiles or debris with position and speed
+0x06063f8c func stage6_BuildChainPoints hand lays out 7 plus 6 plus more link points from boss position, spacing via helper
+0x060641e4 func stage6_DrawChainLinks hand projects consecutive point pairs to screen and draws quads between them with depth sort

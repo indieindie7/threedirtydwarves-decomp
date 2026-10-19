@@ -1,0 +1,3 @@
+0x06060000 func stage5_RegisterEventHandlers hand clears bss, registers stage slot callbacks and many event ids
+0x06060640 func stage5_UpdateCamera hand follows player position with clamps and scroll limits, sets scroll registers
+0x06060bb0 func stage5_InitStage hand zeroes camera state, fills scroll tiles, loads STAGE5 GARBAGE BIN background

@@ -1,0 +1,4 @@
+F 06060000 stage2_RegisterEventHandlers USER_DEFINED 146
+F 0606011c stage2_BuildRotationMatrix USER_DEFINED 362
+F 060605ac stage2_UpdateCamera USER_DEFINED 1074
+F 06060af0 stage2_InitStage USER_DEFINED 324

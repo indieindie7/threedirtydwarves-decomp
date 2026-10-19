@@ -1,0 +1,11 @@
+0x06060000 func logo_RunBootScreens hand draws THREE DIRTY DWARVES title text, SMPC polling, switch on scene id for logo/title/password flow
+0x06060eb4 func logo_DrawDebugStatusText hand copies SUPERHERO, CHEAT MODE, JOYRECORD, BACKUP DISABLED strings and prints them when flags set
+0x06061134 func menu_BuildItemTable hand fills 0x1c-byte menu entries from template list, sets item spacing, selection and terminator 0xff
+0x06061244 func menu_UpdateSelection hand pad up/down/left/right moves cursor, adjusts item values by flags, returns selected entry or 0
+0x06061420 func logo_TitleScreenLoop hand loads LOGO TITLE_BM and LOGO_BM, runs title menu loop, BACKUP DISABLED message, calls password screen
+0x06061e84 func menu_HandleItemType hand switch on item type char d/f etc: reads pad bits, steps values with min/max clamp
+0x06062278 func logo_InitPasswordSlots hand copies template to buffer then sets 25 nine-byte slots with 0xff and 0 fields
+0x06062394 func logo_PasswordEntryScreen hand SET PASSWORD and PASSWORD ERROR text, pad cycles letters A-Z and dot over 7 characters
+0x06062fa8 func logo_InitPasswordHeader hand writes 0xff,6,0x5b header then three pairs 0,0x70 into buffer
+0x06062fe8 func logo_DecodePasswordSettings hand unpacks password bytes into menu items g,h,k,f,e values and per-dwarf fields
+0x0606319c func logo_EncodePasswordSettings hand packs current menu item values into password bytes, header 0xf2, items e,g,h,k

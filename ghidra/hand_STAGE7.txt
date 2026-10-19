@@ -1,0 +1,10 @@
+0x06060000 func stage7_RegisterEventHandlers hand clears bss, registers stage slot callbacks for event ids 0x5c,0x5d,0x7f
+0x06060498 func stage7_UpdateCamera hand follows player position with clamps, sets scroll registers
+0x060608dc func stage7_InitStage hand zeroes camera and scroll state, sets scroll parameters, loads background
+0x06060bac func stage7_LoadSprites hand five calls loading 0x20 wide sprite tiles at consecutive offsets
+0x06060c7c func stage7_DrawRotatedQuad hand builds rotated quad corners from angle sin cos and submits it
+0x06060fe0 func stage7_BuildRotationMatrix hand computes sin cos products into 3x3 matrix at +0x1c..0x30
+0x060622dc func stage7_UnpackSpriteFrame hand unpacks sprite frame table entries into command list with addresses and sizes
+0x06062400 func stage7_SetSpriteAnimation hand caches current anim id frame and pointer, calls setup when changed, else steps frame
+0x06065044 func stage7_DrawPlayerSprite hand draws player sprite at 16.16 position, with mirrored copy when flag 0x40 or wrap
+0x060668a4 func stage7_TickRandomSpawn hand counts frames then picks a random spawn type 9 or 0xc by position

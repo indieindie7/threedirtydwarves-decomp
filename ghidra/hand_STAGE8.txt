@@ -1,0 +1,5 @@
+0x06060000 func stage8_Init hand clears BSS via memset, sets stage table entry, registers actor handlers 0x5e-0x61,0x63,0x64,0x69
+0x06060538 func stage8_UpdateCamera hand scrolls camera toward player with clamps, sets VDP2 scroll values and layer offsets each frame
+0x060609b0 func stage8_SetupScene hand zeroes scene struct, inits scroll tables, loads STAGE8_TROLLEY.BIN, 64-entry loop
+0x06060dac func stage8_UpdateTrolleyInput hand sets player state 0x4e from pad bits (0x40,0x20) and tracked counter while riding trolley
+0x06060e70 func stage8_HandleTrolleyMove hand pad bits adjust player velocity or state; clamps speed at limit, state 0xb check

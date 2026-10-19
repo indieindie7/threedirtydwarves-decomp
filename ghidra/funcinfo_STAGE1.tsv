@@ -1,0 +1,4 @@
+F 06060000 stage1_RegisterEventHandlers USER_DEFINED 358
+F 06060638 stage1_UpdateCamera USER_DEFINED 1162
+F 06060bec stage1_InitStage USER_DEFINED 448
+F 06065f68 stage1_TickRandomSpawn USER_DEFINED 82

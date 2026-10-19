@@ -1,0 +1,3 @@
+0x06060000 func stage15_Init hand clears BSS via memset, sets stage table entry, registers actor handlers
+0x0606057c func stage15_UpdateCamera hand scrolls camera following player with clamps, sets scroll registers per frame
+0x06060b00 func stage15_SetupScene hand zeroes scene struct, sets scroll params, loads STAGE15_RIKERS.BIN

@@ -1,0 +1,7 @@
+0x06060000 func stage10_Init hand clears BSS via memset, sets stage table entry, registers three actor handlers
+0x060604fc func stage10_SetupScene hand zeroes scene struct, sets scroll params, 64-entry init loops for two layers
+0x060606fc func stage10_UpdateCamera hand scrolls camera following player with clamps, sets scroll registers per frame
+0x06060a60 func stage10_UpdateSpawnScript hand decrements timers, steps spawn script table, spawns objects when counter expires
+0x06060c3c func stage10_InitTileGrid hand calls tile-set function six times with 3x2 grid indices stepping 0x20
+0x06060d4c func stage10_BuildBoundaryQuads hand sets corner coords of several quads by scroll threshold, calls polygon-build helper
+0x06061e54 func stage10_ResolveBoxCollision hand AABB overlap test between two objects, computes penetration and push-out direction flags
